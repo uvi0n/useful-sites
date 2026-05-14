@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- НОВОЕ: SEO Описание сайта для поисковиков -->
+    <meta name="description" content="free-webtools — огромная коллекция лучших бесплатных нейросетей, инструментов для дизайна, разработки, архитектуры и учебы.">
     <title>free-webtools | Полезные сайты</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
@@ -11,26 +13,33 @@
 
     <!-- Рекламная плашка -->
     <div class="ad-banner" id="adBanner">
-        <span id="adText">Нашли ошибку? Хотите добавть сайт? По вопросам рекламы: </span>
+        <span id="adText">Нашли ошибку? Хотите добавить сайт? По вопросам рекламы: </span>
         <a href="mailto:inianovbob@gmail.com" class="ad-link">inianovbob@gmail.com</a>
     </div>
 
     <!-- Закрепленная шапка -->
     <header class="header">
-    <div class="header-content">
-        <div class="logo">🚀 free-webtools</div>
-        <div class="search-wrapper">
-            <input type="text" class="search-box" id="searchInput" placeholder="Поиск инструментов...">
+        <div class="header-content">
+            <div class="logo">🚀 free-webtools</div>
+            
+            <!-- НОВОЕ: Блок для счетчика сайтов -->
+            <div id="statsCounter" class="stats-counter"></div>
+
+            <div class="search-wrapper">
+                <input type="text" class="search-box" id="searchInput" placeholder="Поиск инструментов...">
+            </div>
+            
+            <div class="header-controls">
+                <!-- НОВОЕ: Кнопка Случайный сайт (Кубик) -->
+                <button class="icon-btn" id="randomBtn" title="Случайный сайт">🎲</button>
+                <button class="icon-btn" id="langToggle">🇷🇺 RU</button>
+                <button class="icon-btn" id="themeToggle">🌓</button>
+            </div>
         </div>
-        <div class="header-controls">
-            <button class="icon-btn" id="langToggle">🇷🇺 RU</button>
-            <button class="icon-btn" id="themeToggle">🌓</button>
-        </div>
-    </div>
-    
-    <div class="filters-container" id="filters"></div>
-    <div class="filters-container price-filters" id="priceFilters"></div>
-</header>
+        
+        <div class="filters-container" id="filters"></div>
+        <div class="filters-container price-filters" id="priceFilters"></div>
+    </header>
 
     <!-- Сетка карточек -->
     <main class="container" id="sites-container"></main>
