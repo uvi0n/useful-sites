@@ -15,7 +15,7 @@ const filtersPanel = document.getElementById('filters');
 // НОВОЕ: Добавлены переводы для ценников (anyPrice, free, freemium, paid)
 const ui = {
     ru: { searchPlaceholder: "Поиск...", all: "Все", anyPrice: "Любая цена", free: "Бесплатно", freemium: "Частично бесплатно", paid: "Платно", ad: "По вопросам рекламы: ", openBtn: "Открыть", visitBtn: "Перейти на сайт", pros: "Плюсы", cons: "Минусы", back: "⬅ Назад" },
-    en: { searchPlaceholder: "Search...", all: "All", anyPrice: "Any Price", free: "Free", freemium: "Freemium", paid: "Paid", ad: "For advertising: ", openBtn: "Open", visitBtn: "Visit Site", pros: "Pros", cons: "Cons", back: "⬅ Back" }
+    en: { searchPlaceholder: "Search...", all: "All", anyPrice: "Any Price", free: "Free", freemium: "Partially Free", paid: "Paid", ad: "For advertising: ", openBtn: "Open", visitBtn: "Visit Site", pros: "Pros", cons: "Cons", back: "⬅ Back" }
 };
 
 let currentLang = localStorage.getItem('lang') || 'ru';
