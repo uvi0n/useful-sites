@@ -1,21 +1,3 @@
-// Ставим в самое начало файла!
-window.fixLogo = function(imgElement, siteName) {
-    // Если картинка уже заменена или объекта нет, выходим
-    if (!imgElement || imgElement.tagName === 'DIV') return;
-
-    const firstLetter = siteName ? siteName.charAt(0).toUpperCase() : '?';
-    const fallbackDiv = document.createElement('div');
-    
-    // Копируем все классы (чтобы сохранились размеры 52px и т.д.)
-    fallbackDiv.className = imgElement.className + ' logo-fallback'; 
-    fallbackDiv.textContent = firstLetter;
-    
-    // Безопасная замена
-    if (imgElement.parentNode) {
-        imgElement.parentNode.replaceChild(fallbackDiv, imgElement);
-    }
-};
-
 const container = document.getElementById('sites-container');
 const searchInput = document.getElementById('searchInput');
 const filtersContainer = document.getElementById('filters');
@@ -110,7 +92,7 @@ function filterData() {
         card.innerHTML = `
             <div class="card-header">
                 <span class="category">${site.category[currentLang]}</span>
-                <img src="${logoUrl}" alt="L" class="site-logo" loading="lazy" onerror="fixLogo(this, '${site.name}')">
+                <img src="${logoUrl}" alt="" class="site-logo" loading="lazy" onerror="this.style.display='none'">
             </div>
             <h3>${site.name}</h3>
             <a href="${site.url}" target="_blank" class="site-link" onclick="event.stopPropagation()">${site.url}</a>
@@ -136,7 +118,7 @@ window.openDetail = function(siteName) {
 
     detailContent.innerHTML = `
         <div class="detail-header-info">
-            <img src="${logoUrl}" alt="L" class="detail-logo" onerror="fixLogo(this, '${site.name}')">
+            <img src="${logoUrl}" alt="" class="detail-logo" onerror="this.style.display='none'">
             <div class="detail-title">
                 <h2>${site.name}</h2>
                 <span class="category">${site.category[currentLang]}</span>
