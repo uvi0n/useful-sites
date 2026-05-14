@@ -92,19 +92,18 @@ function filterData() {
         const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
         const tagsHtml = site.keywords.map(tag => `<span class="tag">#${tag}</span>`).join('');
         
+        // Внутри filterData():
+        const fallbackLogo = `https://ui-avatars.com/api/?name=${encodeURIComponent(site.name)}&background=random&color=fff&size=64&bold=true`;
+        
         card.innerHTML = `
             <div class="card-header">
                 <span class="category">${site.category[currentLang]}</span>
-                <img src="${logoUrl}" alt="Логотип" class="site-logo" loading="lazy">
+                <img src="${logoUrl}" alt="Логотип" class="site-logo" loading="lazy" onerror="this.onerror=null; this.src='${fallbackLogo}';">
             </div>
             <h3>${site.name}</h3>
-            <!-- Прямая ссылка на сайт -->
             <a href="${site.url}" target="_blank" class="site-link" onclick="event.stopPropagation()">${site.url}</a>
-            
             <div class="tags">${tagsHtml}</div>
             <p class="desc">${site.desc[currentLang]}</p>
-            
-            <!-- Кнопка Открыть -->
             <a href="${site.url}" target="_blank" class="btn" onclick="event.stopPropagation()">${ui[currentLang].openBtn}</a>
         `;
 
@@ -126,9 +125,12 @@ window.openDetail = function(siteName) {
     const prosList = site.pros[currentLang].map(pro => `<li>${pro}</li>`).join('');
     const consList = site.cons[currentLang].map(con => `<li>${con}</li>`).join('');
 
+    // Внутри window.openDetail():
+    const fallbackLogoBig = `https://ui-avatars.com/api/?name=${encodeURIComponent(site.name)}&background=random&color=fff&size=128&bold=true`;
+
     detailContent.innerHTML = `
         <div class="detail-header-info">
-            <img src="${logoUrl}" alt="Логотип" class="detail-logo">
+            <img src="${logoUrl}" alt="Логотип" class="detail-logo" onerror="this.onerror=null; this.src='${fallbackLogoBig}';">
             <div class="detail-title">
                 <h2>${site.name}</h2>
                 <span class="category">${site.category[currentLang]}</span>
