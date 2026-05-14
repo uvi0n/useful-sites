@@ -467,5 +467,40 @@ const sitesData = [
         pros: { ru: ["Охватывает весь мир", "Очень наглядно"], en: ["Covers the whole world", "Highly visual"] },
         cons: { ru: ["Расписание автобусов бывает неточным"], en: ["Bus schedules can be inaccurate"] },
         keywords: ["маршрут", "поездка", "карта", "транспорт"]
+    },
+    // --- АРХИТЕКТУРА И ДИЗАЙН ---
+    {
+        name: "Coolors",
+        url: "https://coolors.co/",
+        price: "freemium",
+        category: { ru: "Дизайн", en: "Design" },
+        desc: { ru: "Генератор цветовых палитр.", en: "Color palette generator." },
+        fullDesc: { ru: "Идеально подходит для подбора цветов в интерьере или веб-дизайне. Генерирует гармоничные схемы за один клик.", en: "Perfect for interior or web design. Generates matching schemes in one click." },
+        pros: { ru: ["Очень быстро", "Экспорт в PDF/PNG"], en: ["Very fast", "Export to PDF/PNG"] },
+        cons: { ru: ["Много функций платные"], en: ["Many features are paid"] },
+        keywords: ["цвет", "палитра", "дизайн", "интерьер"]
+    },
+    {
+        name: "Textures.com",
+        url: "https://www.textures.com/",
+        price: "freemium",
+        category: { ru: "Архитектура", en: "Architecture" },
+        desc: { ru: "База текстур для 3D моделей.", en: "Texture database for 3D." },
+        fullDesc: { ru: "Огромный выбор текстур: кирпич, дерево, металл. Незаменимо при работе в Blender или 3ds Max для визуализации экстерьеров.", en: "Huge selection of textures: brick, wood, metal. Essential for Blender/3ds Max." },
+        pros: { ru: ["Высокое разрешение", "Бесплатные ежедневные кредиты"], en: ["High resolution", "Free daily credits"] },
+        cons: { ru: ["Лимит на скачивание в день"], en: ["Daily download limit"] },
+        keywords: ["текстуры", "3d", "рендер", "дизайн"]
+    },
+    // --- ИГРЫ ---
+    {
+        name: "SteamDB",
+        url: "https://steamdb.info/",
+        price: "free",
+        category: { ru: "Игры", en: "Gaming" },
+        desc: { ru: "История цен и статистика Steam.", en: "Steam price history and stats." },
+        fullDesc: { ru: "Показывает когда будет следующая распродажа, самые низкие цены на игры и статистику онлайна.", en: "Shows next sale dates, lowest prices, and player counts." },
+        pros: { ru: ["Честная история цен", "Без рекламы"], en: ["Honest price history", "No ads"] },
+        cons: { ru: ["Интерфейс немного перегружен"], en: ["Cluttered UI"] },
+        keywords: ["steam", "скидки", "игры"]
     }
 ];
