@@ -293,7 +293,7 @@ const sitesData = [
         pros: { ru: ["Абсолютно надежно", "Сканирует ссылки до перехода"], en: ["Absolutely reliable", "Scans URLs before clicking"] },
         cons: { ru: ["Ограничение размера файла (650 МБ)"], en: ["File size limit 650MB"] },
         keywords: ["вирус", "троян", "файл", "сканер"]
-    }
+    },
     // --- ОБУЧЕНИЕ И НАУКА (EDUCATION) ---
     {
         name: "WolframAlpha",
