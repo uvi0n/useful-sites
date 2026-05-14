@@ -197,3 +197,19 @@ body {
 
 .detail-actions { text-align: center; margin-top: 20px; }
 .detail-actions .btn { display: inline-block; padding: 15px 40px; font-size: 18px; }
+
+/* Стиль для заглушки (первая буква названия) */
+.logo-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-color);
+    color: white;
+    font-weight: bold;
+    font-size: 24px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+.detail-logo.logo-fallback {
+    font-size: 40px; /* Делаем букву больше для детального просмотра */
+}
