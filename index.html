@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Полезные сайты</title>
+    <style>
+        /* Здесь мы наводим красоту (CSS) */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f4f9; padding: 20px; color: #333; }
+        h1 { text-align: center; margin-bottom: 40px; }
+        .container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; max-width: 1200px; margin: 0 auto; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); width: 300px; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); }
+        .card h3 { margin-top: 0; font-size: 20px; }
+        .category { font-size: 12px; font-weight: bold; color: #007bff; text-transform: uppercase; margin-bottom: 10px; display: block; }
+        .desc { font-size: 14px; color: #666; line-height: 1.5; margin-bottom: 20px; min-height: 60px; }
+        .btn { display: block; text-align: center; padding: 10px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; }
+        .btn:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+
+    <h1>🚀 Сборник лучших бесплатных сайтов</h1>
+    
+    <!-- Сюда скрипт будет автоматически вставлять карточки -->
+    <div class="container" id="sites-container"></div>
+
+    <script>
+        // ТВОЯ БАЗА ДАННЫХ: Добавляй новые сайты сюда
+        const sitesData = [
+            {
+                name: "Remove.bg",
+                description: "Нейросеть, которая идеально удаляет фон с любой фотографии за пару секунд.",
+                url: "https://remove.bg",
+                category: "Дизайн"
+            },
+            {
+                name: "Photopea",
+                description: "Бесплатный клон Photoshop прямо в браузере. Работает даже с тяжелыми PSD файлами.",
+                url: "https://www.photopea.com/",
+                category: "Инструменты"
+            },
+            {
+                name: "10 Minute Mail",
+                description: "Временная почта на 10 минут. Идеально для регистраций, чтобы не получать спам на личный ящик.",
+                url: "https://10minutemail.com/",
+                category: "Приватность"
+            }
+        ];
+      
+        const container = document.getElementById('sites-container');
+
+        sitesData.forEach(site => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <span class="category">${site.category}</span>
+                <h3>${site.name}</h3>
+                <p class="desc">${site.description}</p>
+                <a href="${site.url}" target="_blank" class="btn">Перейти на сайт</a>
+            `;
+            container.appendChild(card);
+        });
+    </script>
+
+</body>
+</html>
