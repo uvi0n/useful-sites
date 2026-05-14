@@ -5,63 +5,143 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Полезные сайты</title>
     <style>
-        /* Здесь мы наводим красоту (CSS) */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f4f9; padding: 20px; color: #333; }
-        h1 { text-align: center; margin-bottom: 40px; }
+        /* Цветовые переменные для светлой и темной темы */
+        :root {
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --card-bg: white;
+            --card-shadow: rgba(0,0,0,0.05);
+            --btn-bg: #007bff;
+            --btn-hover: #0056b3;
+        }
+        [data-theme="dark"] {
+            --bg-color: #1a1a2e;
+            --text-color: #e6e6e6;
+            --card-bg: #16213e;
+            --card-shadow: rgba(0,0,0,0.2);
+        }
+        
+        body { font-family: 'Segoe UI', Tahoma, Geneva, sans-serif; background: var(--bg-color); color: var(--text-color); padding: 20px; transition: background 0.3s, color 0.3s; }
+        h1 { text-align: center; margin-bottom: 20px; }
+        
+        /* Панель управления (Поиск и фильтры) */
+        .controls { max-width: 1200px; margin: 0 auto 30px; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; align-items: center; }
+        .search-box { padding: 10px 15px; border: 1px solid #ccc; border-radius: 8px; width: 300px; font-size: 16px; background: var(--card-bg); color: var(--text-color); outline: none; transition: 0.3s;}
+        .search-box:focus { border-color: var(--btn-bg); }
+        .filter-btn { padding: 8px 15px; border: none; border-radius: 20px; background: var(--card-bg); color: var(--text-color); cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px var(--card-shadow); transition: 0.2s;}
+        .filter-btn:hover { transform: translateY(-2px); }
+        .filter-btn.active { background: var(--btn-bg); color: white; }
+        .theme-toggle { padding: 10px; border: none; border-radius: 8px; background: transparent; cursor: pointer; font-size: 24px; transition: 0.2s; }
+        .theme-toggle:hover { transform: scale(1.1); }
+
+        /* Сетка карточек */
         .container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; max-width: 1200px; margin: 0 auto; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); width: 300px; transition: transform 0.2s; }
+        .card { background: var(--card-bg); padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px var(--card-shadow); width: 300px; transition: transform 0.2s; display: flex; flex-direction: column;}
         .card:hover { transform: translateY(-5px); }
-        .card h3 { margin-top: 0; font-size: 20px; }
-        .category { font-size: 12px; font-weight: bold; color: #007bff; text-transform: uppercase; margin-bottom: 10px; display: block; }
-        .desc { font-size: 14px; color: #666; line-height: 1.5; margin-bottom: 20px; min-height: 60px; }
-        .btn { display: block; text-align: center; padding: 10px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; }
-        .btn:hover { background: #0056b3; }
+        .card h3 { margin-top: 0; font-size: 20px; margin-bottom: 10px;}
+        .category { font-size: 12px; font-weight: bold; color: var(--btn-bg); text-transform: uppercase; margin-bottom: 10px; display: inline-block; }
+        .desc { font-size: 14px; line-height: 1.5; margin-bottom: 20px; flex-grow: 1; opacity: 0.9;}
+        .btn { display: block; text-align: center; padding: 10px; background: var(--btn-bg); color: white; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: auto; transition: 0.2s;}
+        .btn:hover { background: var(--btn-hover); }
     </style>
 </head>
 <body>
 
-    <h1>🚀 Сборник лучших бесплатных сайтов</h1>
+    <h1>🚀 Сборник лучших сайтов</h1>
     
-    <!-- Сюда скрипт будет автоматически вставлять карточки -->
+    <!-- Панель управления -->
+    <div class="controls">
+        <input type="text" class="search-box" id="searchInput" placeholder="Поиск по названию или описанию...">
+        <div id="filters">
+            <!-- Кнопки категорий появятся тут автоматически -->
+        </div>
+        <button class="theme-toggle" id="themeToggle" title="Переключить тему">🌓</button>
+    </div>
+
+    <!-- Контейнер для карточек -->
     <div class="container" id="sites-container"></div>
 
     <script>
-        // ТВОЯ БАЗА ДАННЫХ: Добавляй новые сайты сюда
+        // ТВОЯ БАЗА ДАННЫХ
         const sitesData = [
-            {
-                name: "Remove.bg",
-                description: "Нейросеть, которая идеально удаляет фон с любой фотографии за пару секунд.",
-                url: "https://remove.bg",
-                category: "Дизайн"
-            },
-            {
-                name: "Photopea",
-                description: "Бесплатный клон Photoshop прямо в браузере. Работает даже с тяжелыми PSD файлами.",
-                url: "https://www.photopea.com/",
-                category: "Инструменты"
-            },
-            {
-                name: "10 Minute Mail",
-                description: "Временная почта на 10 минут. Идеально для регистраций, чтобы не получать спам на личный ящик.",
-                url: "https://10minutemail.com/",
-                category: "Приватность"
-            }
+            { name: "Remove.bg", description: "Нейросеть, которая идеально удаляет фон с любой фотографии за пару секунд.", url: "https://remove.bg", category: "Дизайн" },
+            { name: "Photopea", description: "Бесплатный клон Photoshop прямо в браузере. Работает даже с тяжелыми PSD файлами.", url: "https://www.photopea.com/", category: "Инструменты" },
+            { name: "10 Minute Mail", description: "Временная почта на 10 минут. Идеально для регистраций, чтобы не получать спам.", url: "https://10minutemail.com/", category: "Приватность" },
+            { name: "Flaticon", description: "Огромная база бесплатных векторных иконок для твоих проектов и презентаций.", url: "https://www.flaticon.com/", category: "Дизайн" }
         ];
-      
+
         const container = document.getElementById('sites-container');
+        const searchInput = document.getElementById('searchInput');
+        const filtersContainer = document.getElementById('filters');
+        let currentCategory = 'Все';
 
-        sitesData.forEach(site => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <span class="category">${site.category}</span>
-                <h3>${site.name}</h3>
-                <p class="desc">${site.description}</p>
-                <a href="${site.url}" target="_blank" class="btn">Перейти на сайт</a>
-            `;
-            container.appendChild(card);
-        });
+        // Функция отрисовки карточек
+        function renderCards(data) {
+            container.innerHTML = '';
+            if (data.length === 0) {
+                container.innerHTML = '<h3>Ничего не найдено 😢</h3>';
+                return;
+            }
+            data.forEach(site => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div><span class="category">${site.category}</span></div>
+                    <h3>${site.name}</h3>
+                    <p class="desc">${site.description}</p>
+                    <a href="${site.url}" target="_blank" class="btn">Перейти на сайт</a>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Функция отрисовки кнопок фильтров
+        function renderFilters() {
+            // Вытаскиваем все уникальные категории из базы
+            const categories = ['Все', ...new Set(sitesData.map(site => site.category))];
+            filtersContainer.innerHTML = '';
+            
+            categories.forEach(category => {
+                const btn = document.createElement('button');
+                btn.className = `filter-btn ${category === currentCategory ? 'active' : ''}`;
+                btn.textContent = category;
+                btn.onclick = () => {
+                    currentCategory = category;
+                    renderFilters(); // Перерисовываем, чтобы обновить активную кнопку
+                    filterData();    // Фильтруем карточки
+                };
+                filtersContainer.appendChild(btn);
+            });
+        }
+
+        // Логика поиска и фильтрации
+        function filterData() {
+            const query = searchInput.value.toLowerCase();
+            const filtered = sitesData.filter(site => {
+                const matchesCategory = currentCategory === 'Все' || site.category === currentCategory;
+                const matchesSearch = site.name.toLowerCase().includes(query) || site.description.toLowerCase().includes(query);
+                return matchesCategory && matchesSearch;
+            });
+            renderCards(filtered);
+        }
+
+        // Логика темной темы
+        const themeToggle = document.getElementById('themeToggle');
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        if (currentTheme === 'dark') document.body.setAttribute('data-theme', 'dark');
+
+        themeToggle.onclick = () => {
+            const isDark = document.body.getAttribute('data-theme') === 'dark';
+            document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        };
+
+        // Запуск поиска при вводе текста
+        searchInput.addEventListener('input', filterData);
+
+        // Инициализация сайта при первой загрузке
+        renderFilters();
+        renderCards(sitesData);
     </script>
-
 </body>
 </html>
