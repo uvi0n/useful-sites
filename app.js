@@ -1,3 +1,21 @@
+// Ставим в самое начало файла!
+window.fixLogo = function(imgElement, siteName) {
+    // Если картинка уже заменена или объекта нет, выходим
+    if (!imgElement || imgElement.tagName === 'DIV') return;
+
+    const firstLetter = siteName ? siteName.charAt(0).toUpperCase() : '?';
+    const fallbackDiv = document.createElement('div');
+    
+    // Копируем все классы (чтобы сохранились размеры 52px и т.д.)
+    fallbackDiv.className = imgElement.className + ' logo-fallback'; 
+    fallbackDiv.textContent = firstLetter;
+    
+    // Безопасная замена
+    if (imgElement.parentNode) {
+        imgElement.parentNode.replaceChild(fallbackDiv, imgElement);
+    }
+};
+
 const container = document.getElementById('sites-container');
 const searchInput = document.getElementById('searchInput');
 const filtersContainer = document.getElementById('filters');
@@ -20,18 +38,6 @@ let currentTheme = localStorage.getItem('theme') || 'dark';
 let currentCategory = 'Все';
 
 if (currentTheme === 'dark') document.body.setAttribute('data-theme', 'dark');
-
-// Твоя идея: замена битого логотипа на первую букву названия (без сторонних сервисов)
-window.fixLogo = function(imgElement, siteName) {
-    const firstLetter = siteName.charAt(0);
-    const fallbackDiv = document.createElement('div');
-    
-    // Копируем классы оформления (site-logo или detail-logo) и добавляем стиль заглушки
-    fallbackDiv.className = imgElement.className + ' logo-fallback'; 
-    fallbackDiv.textContent = firstLetter;
-    
-    imgElement.parentNode.replaceChild(fallbackDiv, imgElement);
-};
 
 langToggle.onclick = () => {
     currentLang = currentLang === 'ru' ? 'en' : 'ru';
