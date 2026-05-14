@@ -294,4 +294,178 @@ const sitesData = [
         cons: { ru: ["Ограничение размера файла (650 МБ)"], en: ["File size limit 650MB"] },
         keywords: ["вирус", "троян", "файл", "сканер"]
     }
+    // --- ОБУЧЕНИЕ И НАУКА (EDUCATION) ---
+    {
+        name: "WolframAlpha",
+        url: "https://www.wolframalpha.com/",
+        price: "freemium",
+        category: { ru: "Обучение", en: "Education" },
+        desc: { ru: "Вычислительная поисковая система.", en: "Computational knowledge engine." },
+        fullDesc: { ru: "Идеально для студентов. Решает сложные математические уравнения, строит графики, выдает факты по химии, географии и физике с пошаговыми решениями.", en: "Perfect for students. Solves complex math equations, provides facts on chemistry, geography, and physics." },
+        pros: { ru: ["Решает почти всё", "Показывает графики"], en: ["Solves almost anything", "Shows graphs"] },
+        cons: { ru: ["Пошаговое решение только в PRO"], en: ["Step-by-step is PRO only"] },
+        keywords: ["математика", "химия", "калькулятор", "учеба"]
+    },
+    {
+        name: "Desmos",
+        url: "https://www.desmos.com/calculator",
+        price: "free",
+        category: { ru: "Обучение", en: "Education" },
+        desc: { ru: "Продвинутый графический калькулятор.", en: "Advanced graphing calculator." },
+        fullDesc: { ru: "Бесплатный, быстрый и невероятно красивый графический калькулятор прямо в браузере. Незаменим для геометрии и алгебры.", en: "Free, fast, and beautiful graphing calculator in your browser." },
+        pros: { ru: ["Моментальная отрисовка", "Понятный интерфейс"], en: ["Instant rendering", "Clean UI"] },
+        cons: { ru: ["Требует знания математического синтаксиса"], en: ["Requires math syntax knowledge"] },
+        keywords: ["график", "математика", "геометрия", "калькулятор"]
+    },
+    {
+        name: "Ptable",
+        url: "https://ptable.com/",
+        price: "free",
+        category: { ru: "Обучение", en: "Education" },
+        desc: { ru: "Интерактивная таблица Менделеева.", en: "Interactive periodic table." },
+        fullDesc: { ru: "Самая подробная динамическая таблица химических элементов. Показывает свойства, орбитали, изотопы и соединения при разных температурах.", en: "The most detailed dynamic periodic table with properties, orbitals, and compounds." },
+        pros: { ru: ["Очень наглядно", "Много языков"], en: ["Very visual", "Many languages"] },
+        cons: { ru: ["Слегка перегруженный интерфейс"], en: ["Slightly cluttered UI"] },
+        keywords: ["химия", "элементы", "наука", "таблица"]
+    },
+    {
+        name: "Briefly",
+        url: "https://briefly.ru/",
+        price: "free",
+        category: { ru: "Обучение", en: "Education" },
+        desc: { ru: "Краткие содержания всех книг.", en: "Short summaries of books." },
+        fullDesc: { ru: "Огромная библиотека кратких содержаний произведений мировой и русской литературы. Спасение перед экзаменами и уроками.", en: "Huge library of literature summaries. A lifesaver for exams." },
+        pros: { ru: ["Читается за 10-15 минут", "Есть аудиоверсии"], en: ["Reads in 10-15 mins", "Audio versions available"] },
+        cons: { ru: ["Не заменяет чтение оригинала :)"], en: ["Doesn't replace the original :)"] },
+        keywords: ["литература", "книги", "кратко", "учеба"]
+    },
+
+    // --- РАЗРАБОТКА (DEVELOPMENT) ---
+    {
+        name: "FlutterFlow",
+        url: "https://flutterflow.io/",
+        price: "freemium",
+        category: { ru: "Разработка", en: "Dev" },
+        desc: { ru: "Создание приложений без кода на Flutter.", en: "No-code app builder on Flutter." },
+        fullDesc: { ru: "Позволяет собирать кроссплатформенные мобильные и веб-приложения визуально (drag-and-drop), а затем экспортировать чистый код на Dart/Flutter.", en: "Build cross-platform mobile & web apps visually and export clean Flutter code." },
+        pros: { ru: ["Экспорт реального кода", "Мощные анимации"], en: ["Export real code", "Powerful animations"] },
+        cons: { ru: ["Экспорт кода только в платной версии"], en: ["Code export is paid"] },
+        keywords: ["flutter", "dart", "мобилка", "nocode"]
+    },
+    {
+        name: "CodeSandbox",
+        url: "https://codesandbox.io/",
+        price: "freemium",
+        category: { ru: "Разработка", en: "Dev" },
+        desc: { ru: "Онлайн-среда разработки.", en: "Online web development environment." },
+        fullDesc: { ru: "Полноценный редактор кода в браузере. Идеально для быстрого прототипирования сайтов на React, Vue или обычного HTML/JS.", en: "Full code editor in the browser. Great for prototyping React, Vue, or HTML/JS." },
+        pros: { ru: ["Мгновенный запуск", "Удобно делиться кодом"], en: ["Instant start", "Easy to share code"] },
+        cons: { ru: ["Приватные песочницы платные"], en: ["Private sandboxes are paid"] },
+        keywords: ["код", "редактор", "веб", "js"]
+    },
+    {
+        name: "GitHub Pages",
+        url: "https://pages.github.com/",
+        price: "free",
+        category: { ru: "Разработка", en: "Dev" },
+        desc: { ru: "Бесплатный хостинг для сайтов.", en: "Free hosting for websites." },
+        fullDesc: { ru: "Официальный инструмент GitHub для превращения репозиториев в автономные, быстрые и бесплатные веб-сайты.", en: "GitHub's official tool to turn repositories into fast, free websites." },
+        pros: { ru: ["Вечный бесплатный хостинг", "Свой домен бесплатно"], en: ["Forever free hosting", "Custom domains"] },
+        cons: { ru: ["Только статические сайты (без бэкенда)"], en: ["Static sites only (no backend)"] },
+        keywords: ["хостинг", "github", "сайт", "деплой"]
+    },
+
+    // --- АРХИТЕКТУРА И 3D (ARCHITECTURE & 3D) ---
+    {
+        name: "Textures.com",
+        url: "https://www.textures.com/",
+        price: "freemium",
+        category: { ru: "Дизайн", en: "Design" },
+        desc: { ru: "Крупнейшая база 3D текстур.", en: "Largest database of 3D textures." },
+        fullDesc: { ru: "Незаменимый сайт для архитекторов и 3D-художников. Кирпич, стекло, дерево, металл — тысячи бесшовных текстур и PBR-материалов для рендера.", en: "Essential for architects and 3D artists. Thousands of seamless textures and PBR materials." },
+        pros: { ru: ["15 бесплатных кредитов каждый день", "Шикарное качество"], en: ["15 free daily credits", "Amazing quality"] },
+        cons: { ru: ["8K текстуры только за деньги"], en: ["8K textures are paid"] },
+        keywords: ["3d", "текстуры", "архитектура", "рендер"]
+    },
+    {
+        name: "Planner 5D",
+        url: "https://planner5d.com/",
+        price: "freemium",
+        category: { ru: "Дизайн", en: "Design" },
+        desc: { ru: "Дизайн интерьера и архитектуры.", en: "Interior and architecture design." },
+        fullDesc: { ru: "Удобный инструмент для планировки квартир, домов и участков. Позволяет делать 2D планы и сразу смотреть их в 3D (с мебелью, стеклянными террасами и крышами).", en: "Tool for planning houses and lots. 2D plans instantly converted to 3D with furniture." },
+        pros: { ru: ["Простота", "Хороший каталог объектов"], en: ["Simplicity", "Good object catalog"] },
+        cons: { ru: ["HD-рендеры платные"], en: ["HD renders are paid"] },
+        keywords: ["дом", "интерьер", "планировка", "архитектура"]
+    },
+    {
+        name: "Sketchfab",
+        url: "https://sketchfab.com/",
+        price: "freemium",
+        category: { ru: "Дизайн", en: "Design" },
+        desc: { ru: "Просмотр и публикация 3D-моделей.", en: "View and publish 3D models." },
+        fullDesc: { ru: "Крупнейшая платформа для публикации, обмена и покупки 3D-моделей. Можно крутить модели прямо в браузере.", en: "Platform for sharing and buying 3D models. Inspect models directly in browser." },
+        pros: { ru: ["Много бесплатных моделей для скачивания", "Отличный вьюер"], en: ["Many free downloadable models", "Great viewer"] },
+        cons: { ru: ["Лимит на загрузки в месяц"], en: ["Monthly upload limits"] },
+        keywords: ["3d", "модели", "cg", "ассеты"]
+    },
+
+    // --- ИГРЫ И ЖЕЛЕЗО (GAMING & PC) ---
+    {
+        name: "Liquipedia",
+        url: "https://liquipedia.net/",
+        price: "free",
+        category: { ru: "Игры", en: "Gaming" },
+        desc: { ru: "Википедия киберспорта.", en: "The esports wiki." },
+        fullDesc: { ru: "Самая полная база данных по турнирам, игрокам и патчам в Dota 2, Counter-Strike 2 и других киберспортивных дисциплинах.", en: "Most comprehensive database for tournaments, players, and patches in Dota 2, CS2, etc." },
+        pros: { ru: ["Мгновенные обновления", "Сетка турниров онлайн"], en: ["Instant updates", "Live brackets"] },
+        cons: { ru: ["Интерфейс на английском"], en: ["English interface mainly"] },
+        keywords: ["dota2", "cs2", "киберспорт", "турниры"]
+    },
+    {
+        name: "SteamDB",
+        url: "https://steamdb.info/",
+        price: "free",
+        category: { ru: "Игры", en: "Gaming" },
+        desc: { ru: "База данных и статистика Steam.", en: "Steam database and stats." },
+        fullDesc: { ru: "Показывает реальный онлайн в играх, историю изменения цен, скрытые скидки и точную стоимость вашего аккаунта.", en: "Shows real player counts, price history, hidden sales, and account value." },
+        pros: { ru: ["История самых низких цен", "Никакой рекламы"], en: ["All-time low price history", "No ads"] },
+        cons: { ru: ["Нужно привязать Steam для точных данных"], en: ["Requires Steam login for personal stats"] },
+        keywords: ["steam", "скидки", "игры", "статистика"]
+    },
+    {
+        name: "PCPartPicker",
+        url: "https://pcpartpicker.com/",
+        price: "free",
+        category: { ru: "Инструменты", en: "Tools" },
+        desc: { ru: "Сборка ПК и проверка совместимости.", en: "PC builder & compatibility checker." },
+        fullDesc: { ru: "Помогает собрать мощный игровой ПК (например, на i7 и RTX 4080 SUPER). Система сама проверит, влезет ли кулер в корпус и хватит ли блока питания.", en: "Helps build a PC. Automatically checks compatibility of parts (CPU, GPU, PSU, etc)." },
+        pros: { ru: ["Точная проверка совместимости", "Сборки пользователей"], en: ["Accurate compatibility check", "User builds"] },
+        cons: { ru: ["Цены ориентированы на западные магазины"], en: ["Prices based on western stores"] },
+        keywords: ["пк", "железо", "сборка", "процессор"]
+    },
+
+    // --- ПУТЕШЕСТВИЯ (TRAVEL) ---
+    {
+        name: "Trip.com",
+        url: "https://www.trip.com/",
+        price: "free",
+        category: { ru: "Путешествия", en: "Travel" },
+        desc: { ru: "Бронирование билетов и отелей (Топ для Азии).", en: "Flight & hotel booking (Great for Asia)." },
+        fullDesc: { ru: "Одно из лучших приложений для планирования поездок, особенно незаменимо при путешествиях в Китай и другие страны Азии. Работает с местными авиалиниями и поездами.", en: "One of the best apps for travel planning, especially indispensable for trips to China." },
+        pros: { ru: ["Покупка билетов на поезда в Китае", "Отличная поддержка"], en: ["Buy train tickets in China", "Great support"] },
+        cons: { ru: ["Цены иногда меняются на этапе оплаты"], en: ["Prices can change at checkout"] },
+        keywords: ["билеты", "азия", "китай", "отели"]
+    },
+    {
+        name: "Rome2Rio",
+        url: "https://www.rome2rio.com/",
+        price: "free",
+        category: { ru: "Путешествия", en: "Travel" },
+        desc: { ru: "Как добраться куда угодно.", en: "How to get anywhere." },
+        fullDesc: { ru: "Показывает абсолютно все способы добраться из точки А в точку Б: самолеты, поезда, автобусы, паромы и даже такси с примерными ценами.", en: "Shows all ways to get from point A to B: flights, trains, buses, ferries with estimated prices." },
+        pros: { ru: ["Охватывает весь мир", "Очень наглядно"], en: ["Covers the whole world", "Highly visual"] },
+        cons: { ru: ["Расписание автобусов бывает неточным"], en: ["Bus schedules can be inaccurate"] },
+        keywords: ["маршрут", "поездка", "карта", "транспорт"]
+    }
 ];
