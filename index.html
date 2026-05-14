@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Useful Sites | Лучшие сервисы интернета</title>
+    <title>FreeToolsHub | Полезные сайты</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,7 +14,7 @@
         <a href="mailto:твоя@почта.com" class="ad-link">твоя@почта.com</a>
     </div>
 
-    <!-- Закрепленная шапка (Стеклянный эффект) -->
+    <!-- Закрепленная шапка -->
     <header class="header">
         <div class="header-content">
             <div class="logo" id="logoText">🚀 FreeToolsHub</div>
@@ -33,16 +33,19 @@
         <div class="filters-container" id="filters"></div>
     </header>
 
-    <!-- Сетка карточек -->
-    <main class="container" id="sites-container"></main>
+    <!-- Сетка карточек и скрытый экран -->
+    <main class="container" id="sites-container">
+        
+        <!-- Детальный просмотр (скрыт по умолчанию) -->
+        <div id="detail-view" class="detail-view hidden">
+            <button class="icon-btn" id="backBtn">⬅ Назад / Back</button>
+            <div id="detail-content" class="detail-content"></div>
+        </div>
+        
+    </main>
 
     <!-- Подключаем логику и базу данных -->
     <script src="data.js"></script>
     <script src="app.js"></script>
 </body>
-    <!-- Детальный просмотр (скрыт по умолчанию) -->
-    <div id="detail-view" class="detail-view hidden">
-        <button class="icon-btn" id="backBtn">⬅ Назад / Back</button>
-        <div id="detail-content" class="detail-content"></div>
-    </div>
 </html>
