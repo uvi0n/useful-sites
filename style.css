@@ -191,3 +191,33 @@ body {
 
 .detail-actions { text-align: center; margin-top: 20px; }
 .detail-actions .btn { display: inline-block; padding: 15px 40px; font-size: 18px; }
+
+/* Фильтры цен */
+.price-filters {
+    margin-top: 10px !important;
+    border-top: 1px solid var(--border-color);
+    padding-top: 10px;
+}
+
+/* Бейджики цен на карточках */
+.price-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-left: 10px;
+}
+.price-free { background: #2ecc71; color: #fff; }
+.price-freemium { background: #f1c40f; color: #000; }
+.price-paid { background: #e74c3c; color: #fff; }
+
+/* Оптимизация для 100+ карточек */
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    /* Добавляем containment для ускорения рендеринга */
+    content-visibility: auto;
+    contain-intrinsic-size: 300px;
+}
