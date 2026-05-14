@@ -4,7 +4,6 @@ const filtersContainer = document.getElementById('filters');
 const themeToggle = document.getElementById('themeToggle');
 const langToggle = document.getElementById('langToggle');
 
-// Новые элементы для детального просмотра
 const detailView = document.getElementById('detail-view');
 const detailContent = document.getElementById('detail-content');
 const backBtn = document.getElementById('backBtn');
@@ -21,6 +20,18 @@ let currentTheme = localStorage.getItem('theme') || 'dark';
 let currentCategory = 'Все';
 
 if (currentTheme === 'dark') document.body.setAttribute('data-theme', 'dark');
+
+// Твоя идея: замена битого логотипа на первую букву названия (без сторонних сервисов)
+window.fixLogo = function(imgElement, siteName) {
+    const firstLetter = siteName.charAt(0);
+    const fallbackDiv = document.createElement('div');
+    
+    // Копируем классы оформления (site-logo или detail-logo) и добавляем стиль заглушки
+    fallbackDiv.className = imgElement.className + ' logo-fallback'; 
+    fallbackDiv.textContent = firstLetter;
+    
+    imgElement.parentNode.replaceChild(fallbackDiv, imgElement);
+};
 
 langToggle.onclick = () => {
     currentLang = currentLang === 'ru' ? 'en' : 'ru';
@@ -71,10 +82,8 @@ function filterData() {
         return matchesCategory && matchesSearch;
     });
     
-    // Скрываем детальный вид, если мы ищем что-то
     closeDetail();
     
-    // Удаляем все старые карточки, кроме скрытого detail-view
     const cards = container.querySelectorAll('.card, h3');
     cards.forEach(card => card.remove());
     
@@ -92,13 +101,10 @@ function filterData() {
         const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
         const tagsHtml = site.keywords.map(tag => `<span class="tag">#${tag}</span>`).join('');
         
-        // Внутри filterData():
-        const fallbackLogo = `https://ui-avatars.com/api/?name=${encodeURIComponent(site.name)}&background=random&color=fff&size=64&bold=true`;
-        
         card.innerHTML = `
             <div class="card-header">
                 <span class="category">${site.category[currentLang]}</span>
-                <img src="${logoUrl}" alt="Логотип" class="site-logo" loading="lazy" onerror="this.onerror=null; this.src='${fallbackLogo}';">
+                <img src="${logoUrl}" alt="L" class="site-logo" loading="lazy" onerror="fixLogo(this, '${site.name}')">
             </div>
             <h3>${site.name}</h3>
             <a href="${site.url}" target="_blank" class="site-link" onclick="event.stopPropagation()">${site.url}</a>
@@ -107,14 +113,11 @@ function filterData() {
             <a href="${site.url}" target="_blank" class="btn" onclick="event.stopPropagation()">${ui[currentLang].openBtn}</a>
         `;
 
-        // Делаем всю карточку кликабельной для открытия деталей
         card.onclick = () => openDetail(site.name);
-        
         container.appendChild(card);
     });
 }
 
-// Открытие страницы с подробностями
 window.openDetail = function(siteName) {
     const site = sitesData.find(s => s.name === siteName);
     if (!site) return;
@@ -125,12 +128,9 @@ window.openDetail = function(siteName) {
     const prosList = site.pros[currentLang].map(pro => `<li>${pro}</li>`).join('');
     const consList = site.cons[currentLang].map(con => `<li>${con}</li>`).join('');
 
-    // Внутри window.openDetail():
-    const fallbackLogoBig = `https://ui-avatars.com/api/?name=${encodeURIComponent(site.name)}&background=random&color=fff&size=128&bold=true`;
-
     detailContent.innerHTML = `
         <div class="detail-header-info">
-            <img src="${logoUrl}" alt="Логотип" class="detail-logo" onerror="this.onerror=null; this.src='${fallbackLogoBig}';">
+            <img src="${logoUrl}" alt="L" class="detail-logo" onerror="fixLogo(this, '${site.name}')">
             <div class="detail-title">
                 <h2>${site.name}</h2>
                 <span class="category">${site.category[currentLang]}</span>
@@ -155,16 +155,14 @@ window.openDetail = function(siteName) {
         </div>
     `;
 
-    // Скрываем все карточки и панель поиска, показываем окно
     const cards = container.querySelectorAll('.card, h3');
     cards.forEach(c => c.classList.add('hidden'));
     headerControls.classList.add('hidden');
     filtersPanel.classList.add('hidden');
     detailView.classList.remove('hidden');
-    window.scrollTo(0, 0); // Скролл наверх
+    window.scrollTo(0, 0);
 };
 
-// Закрытие страницы с подробностями
 window.closeDetail = function() {
     detailView.classList.add('hidden');
     headerControls.classList.remove('hidden');
