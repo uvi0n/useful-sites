@@ -200,6 +200,7 @@ body {
 }
 
 /* Бейджики цен на карточках */
+/* Бейджики цен на карточках */
 .price-badge {
     font-size: 10px;
     padding: 2px 8px;
@@ -207,6 +208,8 @@ body {
     font-weight: bold;
     text-transform: uppercase;
     margin-left: 10px;
+    white-space: nowrap; /* Не дает длинному тексту переноситься */
+    display: inline-block; /* Выравнивает плашку по центру строки */
 }
 .price-free { background: #2ecc71; color: #fff; }
 .price-freemium { background: #f1c40f; color: #000; }
