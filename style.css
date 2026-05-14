@@ -131,7 +131,8 @@ body {
     transition: transform 0.3s, box-shadow 0.3s;
 }
 .card:hover { transform: translateY(-8px); box-shadow: 0 15px 25px rgba(0,0,0,0.1); border-color: var(--accent-color); }
-.card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.site-logo { width: 32px; height: 32px; border-radius: 8px; object-fit: contain; background: white; padding: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 .category { font-size: 11px; font-weight: 800; background: var(--accent-color); color: white; padding: 4px 10px; border-radius: 12px; text-transform: uppercase; letter-spacing: 1px; }
 .card h3 { font-size: 22px; margin-bottom: 10px; }
 .desc { font-size: 14px; line-height: 1.6; opacity: 0.8; margin-bottom: 20px; flex-grow: 1; }
