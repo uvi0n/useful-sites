@@ -15,7 +15,6 @@ const ui = {
     ru: { searchPlaceholder: "Поиск...", all: "Все", ad: "По вопросам рекламы: ", openBtn: "Открыть", visitBtn: "Перейти на сайт", pros: "Плюсы", cons: "Минусы", back: "⬅ Назад" },
     en: { searchPlaceholder: "Search...", all: "All", ad: "For advertising: ", openBtn: "Open", visitBtn: "Visit Site", pros: "Pros", cons: "Cons", back: "⬅ Back" }
 };
-};
 
 let currentLang = localStorage.getItem('lang') || 'ru';
 let currentTheme = localStorage.getItem('theme') || 'dark';
