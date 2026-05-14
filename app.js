@@ -84,9 +84,14 @@ function renderCards(data) {
         return;
     }
     
-    data.forEach(site => {
+   data.forEach(site => {
         const card = document.createElement('div');
         card.className = 'card';
+        
+        // Автоматически достаем домен из ссылки (например, remove.bg)
+        const domain = new URL(site.url).hostname;
+        // Берем логотип через бесплатный API Google
+        const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
         
         // Рендер тегов
         const tagsHtml = site.keywords.map(tag => `<span class="tag">#${tag}</span>`).join('');
@@ -94,6 +99,7 @@ function renderCards(data) {
         card.innerHTML = `
             <div class="card-header">
                 <span class="category">${site.category[currentLang]}</span>
+                <img src="${logoUrl}" alt="Логотип" class="site-logo" loading="lazy">
             </div>
             <h3>${site.name}</h3>
             <div class="tags">${tagsHtml}</div>
