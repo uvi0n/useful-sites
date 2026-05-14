@@ -17,22 +17,20 @@
 
     <!-- Закрепленная шапка -->
     <header class="header">
-        <div class="header-content">
-            <div class="logo" id="logoText">🚀 FreeToolsHub</div>
-            
-            <div class="search-wrapper">
-                <input type="text" class="search-box" id="searchInput" placeholder="Поиск по названию, теме, тегам...">
-            </div>
-
-            <div class="header-controls">
-                <button class="icon-btn" id="langToggle" title="Сменить язык">🇷🇺 RU</button>
-                <button class="icon-btn" id="themeToggle" title="Переключить тему">🌓</button>
-            </div>
+    <div class="header-content">
+        <div class="logo">🚀 FreeToolsHub</div>
+        <div class="search-wrapper">
+            <input type="text" class="search-box" id="searchInput" placeholder="Поиск инструментов...">
         </div>
-        
-        <!-- Панель фильтров -->
-        <div class="filters-container" id="filters"></div>
-    </header>
+        <div class="header-controls">
+            <button class="icon-btn" id="langToggle">🇷🇺 RU</button>
+            <button class="icon-btn" id="themeToggle">🌓</button>
+        </div>
+    </div>
+    
+    <div class="filters-container" id="filters"></div>
+    <div class="filters-container price-filters" id="priceFilters"></div>
+</header>
 
     <!-- Сетка карточек -->
     <main class="container" id="sites-container"></main>
