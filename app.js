@@ -1,7 +1,6 @@
 const container = document.getElementById('sites-container');
 const searchInput = document.getElementById('searchInput');
 const filtersContainer = document.getElementById('filters');
-// НОВОЕ: Переменная для блока с ценами
 const priceFiltersContainer = document.getElementById('priceFilters'); 
 const themeToggle = document.getElementById('themeToggle');
 const langToggle = document.getElementById('langToggle');
@@ -11,17 +10,17 @@ const detailContent = document.getElementById('detail-content');
 const backBtn = document.getElementById('backBtn');
 const headerControls = document.querySelector('.header-content');
 const filtersPanel = document.getElementById('filters');
+const statsCounter = document.getElementById('statsCounter');
+const randomBtn = document.getElementById('randomBtn');
 
-// НОВОЕ: Добавлены переводы для ценников (anyPrice, free, freemium, paid)
 const ui = {
-    ru: { searchPlaceholder: "Поиск...", all: "Все", anyPrice: "Любая цена", free: "Бесплатно", freemium: "Частично бесплатно", paid: "Платно", ad: "Нашли ошибку? Хотите добавть сайт? По вопросам рекламы: ", openBtn: "Открыть", visitBtn: "Перейти на сайт", pros: "Плюсы", cons: "Минусы", back: "⬅ Назад" },
-    en: { searchPlaceholder: "Search...", all: "All", anyPrice: "Any Price", free: "Free", freemium: "Partially Free", paid: "Paid", ad: "Found an error? Want to add a site? For advertising inquiries: ", openBtn: "Open", visitBtn: "Visit Site", pros: "Pros", cons: "Cons", back: "⬅ Back" }
+    ru: { searchPlaceholder: "Поиск...", all: "Все", found: "Найдено: ", anyPrice: "Любая цена", free: "Бесплатно", freemium: "Частично бесплатно", paid: "Платно", ad: "Нашли ошибку? Хотите добавить сайт? По вопросам рекламы: ", openBtn: "Открыть", visitBtn: "Перейти на сайт", pros: "Плюсы", cons: "Минусы", back: "⬅ Назад" },
+    en: { searchPlaceholder: "Search...", all: "All", found: "Found: ", anyPrice: "Any Price", free: "Free", freemium: "Partially Free", paid: "Paid", ad: "Found an error? Want to add a site? For advertising inquiries: ", openBtn: "Open", visitBtn: "Visit Site", pros: "Pros", cons: "Cons", back: "⬅ Back" }
 };
 
 let currentLang = localStorage.getItem('lang') || 'ru';
 let currentTheme = localStorage.getItem('theme') || 'dark';
 let currentCategory = 'Все';
-// НОВОЕ: Переменная для хранения выбранной цены
 let currentPrice = 'all'; 
 
 if (currentTheme === 'dark') document.body.setAttribute('data-theme', 'dark');
@@ -38,15 +37,14 @@ function updateUI() {
     document.getElementById('adText').textContent = ui[currentLang].ad;
     backBtn.textContent = ui[currentLang].back;
     currentCategory = ui[currentLang].all; 
-    currentPrice = 'all'; // Сбрасываем цену при смене языка
+    currentPrice = 'all'; 
     renderFilters();
-    if (priceFiltersContainer) renderPriceFilters(); // Отрисовываем фильтры цен
+    if (priceFiltersContainer) renderPriceFilters();
     filterData();
 }
 
-// НОВАЯ ФУНКЦИЯ: Отрисовка кнопок цены
 function renderPriceFilters() {
-    if (!priceFiltersContainer) return; // Защита от ошибок
+    if (!priceFiltersContainer) return; 
     
     const prices = [
         { id: 'all', label: ui[currentLang].anyPrice },
@@ -87,6 +85,13 @@ function renderFilters() {
     });
 }
 
+// Вспомогательная функция для счетчика
+function updateCounter(count) {
+    if (statsCounter) {
+        statsCounter.textContent = `${ui[currentLang].found} ${count}`;
+    }
+}
+
 function filterData() {
     const query = searchInput.value.toLowerCase();
     
@@ -98,14 +103,14 @@ function filterData() {
         
         const matchesCategory = currentCategory === ui[currentLang].all || catText === currentCategory;
         const matchesSearch = nameText.includes(query) || descText.includes(query) || tagsMatch;
-        
-        // НОВОЕ: Проверка карточки по цене
         const matchPrice = currentPrice === 'all' || site.price === currentPrice;
         
-        // Добавили matchPrice в финальное условие
         return matchesCategory && matchesSearch && matchPrice; 
     });
     
+    // Обновляем счетчик найденных сайтов
+    updateCounter(filtered.length);
+
     closeDetail();
     
     const cards = container.querySelectorAll('.card, h3');
@@ -125,7 +130,6 @@ function filterData() {
         const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
         const tagsHtml = site.keywords.map(tag => `<span class="tag">#${tag}</span>`).join('');
         
-        // НОВОЕ: Генерируем ценник для карточки
         const priceLabel = site.price ? ui[currentLang][site.price] : '';
         const priceHtml = site.price ? `<span class="price-badge price-${site.price}">${priceLabel}</span>` : '';
         
@@ -133,7 +137,7 @@ function filterData() {
             <div class="card-header">
                 <div>
                     <span class="category">${site.category[currentLang]}</span>
-                    ${priceHtml} <!-- Вставили ценник рядом с категорией -->
+                    ${priceHtml}
                 </div>
                 <img src="${logoUrl}" alt="" class="site-logo" loading="lazy" onerror="this.style.display='none'">
             </div>
@@ -190,7 +194,6 @@ window.openDetail = function(siteName) {
     cards.forEach(c => c.classList.add('hidden'));
     headerControls.classList.add('hidden');
     filtersPanel.classList.add('hidden');
-    // НОВОЕ: Скрываем фильтры цен при открытии деталей
     if (priceFiltersContainer) priceFiltersContainer.classList.add('hidden'); 
     detailView.classList.remove('hidden');
     window.scrollTo(0, 0);
@@ -200,7 +203,6 @@ window.closeDetail = function() {
     detailView.classList.add('hidden');
     headerControls.classList.remove('hidden');
     filtersPanel.classList.remove('hidden');
-    // НОВОЕ: Возвращаем фильтры цен при закрытии деталей
     if (priceFiltersContainer) priceFiltersContainer.classList.remove('hidden'); 
     const cards = container.querySelectorAll('.card, h3');
     cards.forEach(c => c.classList.remove('hidden'));
@@ -214,9 +216,14 @@ themeToggle.onclick = () => {
     localStorage.setItem('theme', isDark ? 'light' : 'dark');
 };
 
+randomBtn.onclick = () => {
+    const randomIndex = Math.floor(Math.random() * sitesData.length);
+    const randomSite = sitesData[randomIndex];
+    openDetail(randomSite.name);
+};
+
 searchInput.addEventListener('input', filterData);
 langToggle.textContent = currentLang === 'ru' ? '🇷🇺 RU' : '🇬🇧 EN';
 
-// Инициализация при загрузке
 if (priceFiltersContainer) renderPriceFilters();
 updateUI();
