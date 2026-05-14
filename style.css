@@ -129,15 +129,37 @@ body {
     flex-direction: column;
     backdrop-filter: blur(5px);
     transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer; /* Делает карточку кликабельной */
 }
 .card:hover { transform: translateY(-8px); box-shadow: 0 15px 25px rgba(0,0,0,0.1); border-color: var(--accent-color); }
+
 .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-.site-logo { width: 32px; height: 32px; border-radius: 8px; object-fit: contain; background: white; padding: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 .category { font-size: 11px; font-weight: 800; background: var(--accent-color); color: white; padding: 4px 10px; border-radius: 12px; text-transform: uppercase; letter-spacing: 1px; }
-.card h3 { font-size: 22px; margin-bottom: 10px; }
+
+/* Увеличенный логотип */
+.site-logo { width: 52px; height: 52px; border-radius: 12px; object-fit: contain; background: white; padding: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+.card h3 { font-size: 22px; margin-bottom: 5px; }
+
+/* Прямая ссылка на сайт */
+.site-link { 
+    display: block; 
+    font-size: 13px; 
+    color: var(--accent-color); 
+    margin-bottom: 12px; 
+    text-decoration: none; 
+    opacity: 0.8; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    transition: 0.2s;
+}
+.site-link:hover { opacity: 1; text-decoration: underline; }
+
 .desc { font-size: 14px; line-height: 1.6; opacity: 0.8; margin-bottom: 20px; flex-grow: 1; }
 .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 20px; }
 .tag { font-size: 11px; padding: 3px 8px; background: rgba(128,128,128,0.2); border-radius: 8px; opacity: 0.7; }
+
 .btn { text-align: center; padding: 12px; background: var(--accent-color); color: white; text-decoration: none; border-radius: 10px; font-weight: 600; transition: 0.3s; }
 .btn:hover { background: var(--accent-hover); box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4); }
 
