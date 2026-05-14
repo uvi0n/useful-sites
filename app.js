@@ -12,8 +12,9 @@ const headerControls = document.querySelector('.header-content');
 const filtersPanel = document.getElementById('filters');
 
 const ui = {
-    ru: { searchPlaceholder: "Поиск...", all: "Все", ad: "По вопросам рекламы: ", moreBtn: "Подробнее", visitBtn: "Перейти на сайт", pros: "Плюсы", cons: "Минусы", back: "⬅ Назад" },
-    en: { searchPlaceholder: "Search...", all: "All", ad: "For advertising: ", moreBtn: "Read More", visitBtn: "Visit Site", pros: "Pros", cons: "Cons", back: "⬅ Back" }
+    ru: { searchPlaceholder: "Поиск...", all: "Все", ad: "По вопросам рекламы: ", openBtn: "Открыть", visitBtn: "Перейти на сайт", pros: "Плюсы", cons: "Минусы", back: "⬅ Назад" },
+    en: { searchPlaceholder: "Search...", all: "All", ad: "For advertising: ", openBtn: "Open", visitBtn: "Visit Site", pros: "Pros", cons: "Cons", back: "⬅ Back" }
+};
 };
 
 let currentLang = localStorage.getItem('lang') || 'ru';
@@ -98,10 +99,19 @@ function filterData() {
                 <img src="${logoUrl}" alt="Логотип" class="site-logo" loading="lazy">
             </div>
             <h3>${site.name}</h3>
+            <!-- Прямая ссылка на сайт -->
+            <a href="${site.url}" target="_blank" class="site-link" onclick="event.stopPropagation()">${site.url}</a>
+            
             <div class="tags">${tagsHtml}</div>
             <p class="desc">${site.desc[currentLang]}</p>
-            <button class="btn" onclick="openDetail('${site.name}')">${ui[currentLang].moreBtn}</button>
+            
+            <!-- Кнопка Открыть -->
+            <a href="${site.url}" target="_blank" class="btn" onclick="event.stopPropagation()">${ui[currentLang].openBtn}</a>
         `;
+
+        // Делаем всю карточку кликабельной для открытия деталей
+        card.onclick = () => openDetail(site.name);
+        
         container.appendChild(card);
     });
 }
