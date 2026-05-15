@@ -11,9 +11,10 @@ const backBtn = document.getElementById('backBtn');
 const headerControls = document.querySelector('.header-content');
 const filtersPanel = document.getElementById('filters');
 const statsCounter = document.getElementById('statsCounter');
-const likesLoader = document.getElementById('likesLoader'); // НОВОЕ: Лоадер
+const likesLoader = document.getElementById('likesLoader');
 const randomBtn = document.getElementById('randomBtn');
 const bookmarksBtn = document.getElementById('bookmarksBtn');
+const likesBtn = document.getElementById('likesBtn'); // НОВОЕ: Кнопка лайков в шапке
 const toolOfWeekContainer = document.getElementById('tool-of-week-container');
 const similarToolsContainer = document.getElementById('similar-tools');
 
@@ -27,7 +28,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 // Глобальные объекты и флаги
 let globalLikesMap = {};
-let isLikesLoaded = false; // НОВОЕ: Флаг загрузки
+let isLikesLoaded = false;
 
 const ui = {
     ru: { searchPlaceholder: "Поиск (имя, теги)...", all: "Все", found: "Найдено: ", anyPrice: "Любая цена", free: "Бесплатно", freemium: "Частично", paid: "Платно", ad: "Нашли ошибку? По вопросам рекламы: ", openBtn: "Открыть", visitBtn: "Перейти на сайт", pros: "Плюсы", cons: "Минусы", back: "⬅ Назад" },
@@ -38,7 +39,10 @@ let currentLang = localStorage.getItem('lang') || 'ru';
 let currentTheme = localStorage.getItem('theme') || 'dark';
 let currentCategory = 'Все';
 let currentPrice = 'all'; 
+
+// НОВОЕ: Флаги фильтров
 let showOnlyBookmarks = false;
+let showOnlyLikes = false; 
 
 // Инициализация LocalStorage для Закладок и Лайков
 let bookmarks = JSON.parse(localStorage.getItem('myBookmarks')) || [];
@@ -77,7 +81,6 @@ function updateLikesOnLiveCards() {
             const siteId = match[1];
             const span = btn.querySelector('span');
             if (span) {
-                // Если данные пришли, ставим цифру, если сайта нет в базе — ставим 0
                 span.textContent = globalLikesMap[siteId] !== undefined ? globalLikesMap[siteId] : 0;
             }
         }
@@ -132,7 +135,8 @@ function updateUI() {
 // --- Инструмент недели ---
 function renderToolOfWeek() {
     toolOfWeekContainer.innerHTML = '';
-    if (showOnlyBookmarks || window.location.hash.startsWith('#tool=')) {
+    // НОВОЕ: Прячем баннер недели, если активен любой из фильтров (закладки или лайки)
+    if (showOnlyBookmarks || showOnlyLikes || window.location.hash.startsWith('#tool=')) {
         toolOfWeekContainer.classList.add('hidden');
         return;
     }
@@ -141,9 +145,7 @@ function renderToolOfWeek() {
     const domain = new URL(featuredSite.url).hostname;
     const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
     
-    // НОВОЕ: Если лайки еще не загрузились, показываем "..."
     const actualLikes = isLikesLoaded ? (globalLikesMap[featuredSite.id] !== undefined ? globalLikesMap[featuredSite.id] : 0) : '...';
-    
     const isLiked = likedSites.includes(featuredSite.id);
     const isBookmarked = bookmarks.includes(featuredSite.id);
 
@@ -209,9 +211,12 @@ function filterData() {
         const matchesCategory = currentCategory === ui[currentLang].all || catText === currentCategory;
         const matchesSearch = nameText.includes(query) || descText.includes(query) || tagsMatch;
         const matchPrice = currentPrice === 'all' || site.price === currentPrice;
-        const matchesBookmarks = showOnlyBookmarks ? bookmarks.includes(site.id) : true;
         
-        return matchesCategory && matchesSearch && matchPrice && matchesBookmarks; 
+        // НОВОЕ: Проверка для закладок и лайков
+        const matchesBookmarks = showOnlyBookmarks ? bookmarks.includes(site.id) : true;
+        const matchesLikes = showOnlyLikes ? likedSites.includes(site.id) : true;
+        
+        return matchesCategory && matchesSearch && matchPrice && matchesBookmarks && matchesLikes; 
     });
     
     if (statsCounter) statsCounter.textContent = `${ui[currentLang].found} ${filtered.length}`;
@@ -240,7 +245,6 @@ function filterData() {
         const isBookmarked = bookmarks.includes(site.id);
         const isLiked = likedSites.includes(site.id);
         
-        // НОВОЕ: Если лайки еще не загрузились, показываем "..."
         const actualLikes = isLikesLoaded ? (globalLikesMap[site.id] !== undefined ? globalLikesMap[site.id] : 0) : '...';
 
         card.innerHTML = `
@@ -273,6 +277,7 @@ function filterData() {
     });
 }
 
+// --- КЛИКИ ПО КНОПКАМ ЗАКЛАДОК И ЛАЙКОВ ---
 window.toggleBookmark = function(siteId, btnElement) {
     if (bookmarks.includes(siteId)) {
         bookmarks = bookmarks.filter(id => id !== siteId);
@@ -289,7 +294,6 @@ window.toggleBookmark = function(siteId, btnElement) {
 
 window.toggleLike = function(siteId, btnElement) {
     const span = btnElement.querySelector('span');
-    // Если пользователь нажал до загрузки, считаем что там был 0
     let currentCount = span.textContent === '...' ? 0 : parseInt(span.textContent);
 
     if (likedSites.includes(siteId)) {
@@ -310,6 +314,9 @@ window.toggleLike = function(siteId, btnElement) {
             },
             body: JSON.stringify({ site_id: siteId, likes_count: newCount })
         }).catch(err => console.error("Ошибка сети при снятии лайка:", err));
+        
+        // НОВОЕ: Если мы находимся в режиме "Показать только лайки", убираем карточку
+        if (showOnlyLikes) filterData();
 
     } else {
         // --- СТАВИМ ЛАЙК ---
@@ -333,9 +340,28 @@ window.toggleLike = function(siteId, btnElement) {
     localStorage.setItem('myLikes', JSON.stringify(likedSites));
 };
 
+// --- ФИЛЬТРЫ В ШАПКЕ ---
 bookmarksBtn.onclick = () => {
     showOnlyBookmarks = !showOnlyBookmarks;
+    // Если включили закладки, выключаем лайки (чтобы они не конфликтовали)
+    if (showOnlyBookmarks) {
+        showOnlyLikes = false;
+        likesBtn.classList.remove('active');
+    }
     bookmarksBtn.classList.toggle('active', showOnlyBookmarks);
+    currentCategory = ui[currentLang].all;
+    window.location.hash = '';
+    updateUI();
+};
+
+likesBtn.onclick = () => {
+    showOnlyLikes = !showOnlyLikes;
+    // Если включили лайки, выключаем закладки
+    if (showOnlyLikes) {
+        showOnlyBookmarks = false;
+        bookmarksBtn.classList.remove('active');
+    }
+    likesBtn.classList.toggle('active', showOnlyLikes);
     currentCategory = ui[currentLang].all;
     window.location.hash = '';
     updateUI();
@@ -392,7 +418,7 @@ window.closeDetail = function(updateHash = true) {
     if (updateHash) window.location.hash = '';
     detailView.classList.add('hidden');
     container.classList.remove('hidden');
-    if (!showOnlyBookmarks) toolOfWeekContainer.classList.remove('hidden');
+    if (!showOnlyBookmarks && !showOnlyLikes) toolOfWeekContainer.classList.remove('hidden');
 };
 
 backBtn.onclick = () => closeDetail(true);
@@ -433,12 +459,12 @@ document.getElementById('changelogBtn').onclick = () => {
 document.getElementById('closeChangelog').onclick = () => changelogModal.close();
 
 // --- ЗАПУСК ---
-if (likesLoader) likesLoader.style.display = 'inline-flex'; // Показываем лоадер
+if (likesLoader) likesLoader.style.display = 'inline-flex'; 
 
-handleHash(); // Отрисовываем карточки (везде стоят "...")
+handleHash(); 
 
 loadLikes().then(() => {
-    isLikesLoaded = true; // Отмечаем, что загрузка завершена
-    if (likesLoader) likesLoader.style.display = 'none'; // Прячем лоадер в шапке
-    updateLikesOnLiveCards(); // Превращаем "..." в реальные цифры
+    isLikesLoaded = true; 
+    if (likesLoader) likesLoader.style.display = 'none'; 
+    updateLikesOnLiveCards(); 
 });
