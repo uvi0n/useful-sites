@@ -111,7 +111,7 @@ function renderToolOfWeek() {
     const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
     
     toolOfWeekContainer.innerHTML = `
-        <div class="tool-of-week" onclick="window.location.hash='#tool=${encodeURIComponent(featuredSite.name)}'">
+        <div class="tool-of-week" onclick="window.location.hash='#tool=${featuredSite.id}'">
             <div>
                 <h2>🔥 Инструмент недели: ${featuredSite.name}</h2>
                 <p>${featuredSite.desc[currentLang]}</p>
@@ -225,7 +225,7 @@ const actualLikes = globalLikesMap[site.id] || 0;
             </div>
         `;
 
-        card.onclick = () => { window.location.hash = `#tool=${encodeURIComponent(site.name)}`; };
+       card.onclick = () => { window.location.hash = \#tool=${site.id}`; };`
         container.appendChild(card);
     });
 }
@@ -290,11 +290,10 @@ bookmarksBtn.onclick = () => {
 };
 
 // --- Детальный вид ---
-window.openDetail = function(siteName, updateHash = true) {
-    const site = sitesData.find(s => s.name === siteName);
+window.openDetail = function(siteId, updateHash = true) { const site = sitesData.find(s => s.id === siteId);
     if (!site) return;
 
-    if (updateHash) window.location.hash = `#tool=${encodeURIComponent(siteName)}`;
+    if (updateHash) window.location.hash = \#tool=${siteId}`;`
 
     const domain = new URL(site.url).hostname;
     const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
@@ -327,7 +326,7 @@ window.openDetail = function(siteName, updateHash = true) {
         const simCard = document.createElement('div');
         simCard.className = 'card';
         simCard.innerHTML = `<h4>${s.name}</h4><p style="font-size:12px">${s.desc[currentLang]}</p>`;
-        simCard.onclick = () => window.location.hash = `#tool=${encodeURIComponent(s.name)}`;
+        simCard.onclick = () => window.location.hash = \#tool=${s.id}`;`
         similarToolsContainer.appendChild(simCard);
     });
 
@@ -362,7 +361,7 @@ langToggle.onclick = () => {
 
 randomBtn.onclick = () => {
     const randomIndex = Math.floor(Math.random() * sitesData.length);
-    window.location.hash = `#tool=${encodeURIComponent(sitesData[randomIndex].name)}`;
+    window.location.hash = \#tool=${sitesData[randomIndex].id}`;`
 };
 
 searchInput.addEventListener('input', filterData);
