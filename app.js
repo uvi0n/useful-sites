@@ -14,15 +14,15 @@ const statsCounter = document.getElementById('statsCounter');
 const likesLoader = document.getElementById('likesLoader');
 const randomBtn = document.getElementById('randomBtn');
 const bookmarksBtn = document.getElementById('bookmarksBtn');
-const likesBtn = document.getElementById('likesBtn'); // НОВОЕ: Кнопка лайков в шапке
-const toolOfWeekContainer = document.getElementById('tool-of-week-container');
+const likesBtn = document.getElementById('likesBtn');
 const similarToolsContainer = document.getElementById('similar-tools');
+const sortContainer = document.getElementById('sortContainer'); // Перенесли наверх для правильной работы
 
 // Модалки
 const suggestModal = document.getElementById('suggestModal');
 const changelogModal = document.getElementById('changelogModal');
 
-// Твои ключи
+// Ключи
 const SUPABASE_URL = 'https://nrloiaytvvpghfahjphz.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybG9pYXl0dnZwZ2hmYWhqcGh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NjQ4MjcsImV4cCI6MjA5NDQ0MDgyN30.lFirc7ueW0LEHBk4Rv_VyqbkwHsc4GWIyu7_pkKEPd8';
 
@@ -40,9 +40,10 @@ let currentTheme = localStorage.getItem('theme') || 'dark';
 let currentCategory = 'Все';
 let currentPrice = 'all'; 
 
-// НОВОЕ: Флаги фильтров
+// Флаги фильтров и сортировки
 let showOnlyBookmarks = false;
 let showOnlyLikes = false; 
+let currentSort = 'default'; 
 
 // Инициализация LocalStorage для Закладок и Лайков
 let bookmarks = JSON.parse(localStorage.getItem('myBookmarks')) || [];
@@ -85,18 +86,6 @@ function updateLikesOnLiveCards() {
             }
         }
     });
-    
-    const toolOfWeekBtn = document.querySelector('#tool-of-week-container .like-btn');
-    if (toolOfWeekBtn) {
-        const onclickText = toolOfWeekBtn.getAttribute('onclick');
-        const match = onclickText.match(/toggleLike\('([^']+)'/);
-        if (match && match[1]) {
-            const span = toolOfWeekBtn.querySelector('span');
-            if (span) {
-                span.textContent = globalLikesMap[match[1]] !== undefined ? globalLikesMap[match[1]] : 0;
-            }
-        }
-    }
 }
 
 // --- Роутинг (Hash-навигация) ---
@@ -128,45 +117,7 @@ function updateUI() {
     
     renderFilters();
     renderPriceFilters();
-    renderToolOfWeek();
     filterData();
-}
-
-// --- Инструмент недели ---
-function renderToolOfWeek() {
-    toolOfWeekContainer.innerHTML = '';
-    // НОВОЕ: Прячем баннер недели, если активен любой из фильтров (закладки или лайки)
-    if (showOnlyBookmarks || showOnlyLikes || window.location.hash.startsWith('#tool=')) {
-        toolOfWeekContainer.classList.add('hidden');
-        return;
-    }
-    
-    const featuredSite = sitesData.find(s => s.isHot) || sitesData[0];
-    const domain = new URL(featuredSite.url).hostname;
-    const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
-    
-    const actualLikes = isLikesLoaded ? (globalLikesMap[featuredSite.id] !== undefined ? globalLikesMap[featuredSite.id] : 0) : '...';
-    const isLiked = likedSites.includes(featuredSite.id);
-    const isBookmarked = bookmarks.includes(featuredSite.id);
-
-    toolOfWeekContainer.innerHTML = `
-        <div class="tool-of-week" onclick="window.location.hash='#tool=${featuredSite.id}'">
-            <div style="flex-grow: 1; padding-right: 20px;">
-                <h2>🔥 Инструмент недели: ${featuredSite.name}</h2>
-                <p>${featuredSite.desc[currentLang]}</p>
-                <div class="card-actions" onclick="event.stopPropagation()" style="margin-top: 15px; display: inline-flex; gap: 15px; border-top: none; padding-top: 0;">
-                    <button class="action-btn like-btn ${isLiked ? 'active' : ''}" onclick="toggleLike('${featuredSite.id}', this)" style="color: white;">
-                        ${isLiked ? '❤️' : '🤍'} <span style="color: white;">${actualLikes}</span>
-                    </button>
-                    <button class="action-btn bookmark-btn ${isBookmarked ? 'active' : ''}" onclick="toggleBookmark('${featuredSite.id}', this)" style="color: white;">
-                        ${isBookmarked ? '⭐' : '☆'}
-                    </button>
-                </div>
-            </div>
-            <img src="${logoUrl}" alt="" class="site-logo" onerror="this.style.display='none'">
-        </div>
-    `;
-    toolOfWeekContainer.classList.remove('hidden');
 }
 
 // --- Фильтры ---
@@ -212,15 +163,20 @@ function filterData() {
         const matchesSearch = nameText.includes(query) || descText.includes(query) || tagsMatch;
         const matchPrice = currentPrice === 'all' || site.price === currentPrice;
         
-        // НОВОЕ: Проверка для закладок и лайков
         const matchesBookmarks = showOnlyBookmarks ? bookmarks.includes(site.id) : true;
         const matchesLikes = showOnlyLikes ? likedSites.includes(site.id) : true;
         
         return matchesCategory && matchesSearch && matchPrice && matchesBookmarks && matchesLikes; 
     });
+
+    // --- ЛОГИКА СОРТИРОВКИ ---
+    if (currentSort === 'top') {
+        filtered.sort((a, b) => (globalLikesMap[b.id] || 0) - (globalLikesMap[a.id] || 0));
+    } else if (currentSort === 'new') {
+        filtered.sort((a, b) => (b.isNew === a.isNew) ? 0 : b.isNew ? 1 : -1);
+    }
     
     if (statsCounter) statsCounter.textContent = `${ui[currentLang].found} ${filtered.length}`;
-
     container.innerHTML = '';
     
     if (filtered.length === 0) {
@@ -297,7 +253,6 @@ window.toggleLike = function(siteId, btnElement) {
     let currentCount = span.textContent === '...' ? 0 : parseInt(span.textContent);
 
     if (likedSites.includes(siteId)) {
-        // --- СНИМАЕМ ЛАЙК ---
         likedSites = likedSites.filter(id => id !== siteId);
         btnElement.classList.remove('active');
         const newCount = Math.max(currentCount - 1, 0);
@@ -315,11 +270,9 @@ window.toggleLike = function(siteId, btnElement) {
             body: JSON.stringify({ site_id: siteId, likes_count: newCount })
         }).catch(err => console.error("Ошибка сети при снятии лайка:", err));
         
-        // НОВОЕ: Если мы находимся в режиме "Показать только лайки", убираем карточку
         if (showOnlyLikes) filterData();
 
     } else {
-        // --- СТАВИМ ЛАЙК ---
         likedSites.push(siteId);
         btnElement.classList.add('active');
         const newCount = currentCount + 1;
@@ -343,7 +296,6 @@ window.toggleLike = function(siteId, btnElement) {
 // --- ФИЛЬТРЫ В ШАПКЕ ---
 bookmarksBtn.onclick = () => {
     showOnlyBookmarks = !showOnlyBookmarks;
-    // Если включили закладки, выключаем лайки (чтобы они не конфликтовали)
     if (showOnlyBookmarks) {
         showOnlyLikes = false;
         likesBtn.classList.remove('active');
@@ -356,7 +308,6 @@ bookmarksBtn.onclick = () => {
 
 likesBtn.onclick = () => {
     showOnlyLikes = !showOnlyLikes;
-    // Если включили лайки, выключаем закладки
     if (showOnlyLikes) {
         showOnlyBookmarks = false;
         bookmarksBtn.classList.remove('active');
@@ -409,7 +360,7 @@ window.openDetail = function(siteId, updateHash = true) {
     });
 
     container.classList.add('hidden');
-    toolOfWeekContainer.classList.add('hidden');
+    if(sortContainer) sortContainer.classList.add('hidden');
     detailView.classList.remove('hidden');
     window.scrollTo(0, 0);
 };
@@ -417,8 +368,8 @@ window.openDetail = function(siteId, updateHash = true) {
 window.closeDetail = function(updateHash = true) {
     if (updateHash) window.location.hash = '';
     detailView.classList.add('hidden');
+    if(sortContainer) sortContainer.classList.remove('hidden');
     container.classList.remove('hidden');
-    if (!showOnlyBookmarks && !showOnlyLikes) toolOfWeekContainer.classList.remove('hidden');
 };
 
 backBtn.onclick = () => closeDetail(true);
@@ -458,6 +409,19 @@ document.getElementById('changelogBtn').onclick = () => {
 };
 document.getElementById('closeChangelog').onclick = () => changelogModal.close();
 
+// --- КНОПКИ СОРТИРОВКИ ---
+const sortBtns = document.querySelectorAll('.sort-btn');
+if (sortContainer) {
+    sortBtns.forEach(btn => {
+        btn.onclick = () => {
+            sortBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentSort = btn.getAttribute('data-sort');
+            filterData();
+        };
+    });
+}
+
 // --- ЗАПУСК ---
 if (likesLoader) likesLoader.style.display = 'inline-flex'; 
 
@@ -466,5 +430,9 @@ handleHash();
 loadLikes().then(() => {
     isLikesLoaded = true; 
     if (likesLoader) likesLoader.style.display = 'none'; 
+    
+    // Если по ссылке стоит сортировка ТОП, обновляем порядок сразу
+    if (currentSort === 'top') filterData(); 
+    
     updateLikesOnLiveCards(); 
 });
