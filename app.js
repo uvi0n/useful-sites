@@ -225,7 +225,7 @@ const actualLikes = globalLikesMap[site.id] || 0;
             </div>
         `;
 
-       card.onclick = () => { window.location.hash = \#tool=${site.id}`; };`
+       card.onclick = () => { window.location.hash = \#tool=${encodeURIComponent(site.name)}`; };`
         container.appendChild(card);
     });
 }
