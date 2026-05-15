@@ -37,7 +37,7 @@ let currentCategory = 'Все';
 let currentPrice = 'all'; 
 let showOnlyBookmarks = false;
 
-// Инициализация LocalStorage для Заладок и Лайков
+// Инициализация LocalStorage для Закладок и Лайков
 let bookmarks = JSON.parse(localStorage.getItem('myBookmarks')) || [];
 let likedSites = JSON.parse(localStorage.getItem('myLikes')) || [];
 
@@ -62,12 +62,45 @@ async function loadLikes() {
     }
 }
 
+function updateLikesOnLiveCards() {
+    // Находим все кнопки лайков, которые сейчас отрендерены на странице
+    const likeButtons = container.querySelectorAll('.like-btn');
+    
+    likeButtons.forEach(btn => {
+        // У каждой кнопки при рендере мы привязали onclick="toggleLike('id_сайта', this)"
+        const onclickText = btn.getAttribute('onclick');
+        const match = onclickText.match(/toggleLike\('([^']+)'/);
+        
+        if (match && match[1]) {
+            const siteId = match[1];
+            // Если для этого сайта в базе есть лайки, обновляем цифру внутри тега <span>
+            if (globalLikesMap[siteId] !== undefined) {
+                const span = btn.querySelector('span');
+                if (span) {
+                    span.textContent = globalLikesMap[siteId];
+                }
+            }
+        }
+    });
+    
+    // Также обновим баннер "Инструмент недели", если он активен
+    const toolOfWeekBtn = document.querySelector('#tool-of-week-container .like-btn');
+    if (toolOfWeekBtn) {
+        const onclickText = toolOfWeekBtn.getAttribute('onclick');
+        const match = onclickText.match(/toggleLike\('([^']+)'/);
+        if (match && match[1] && globalLikesMap[match[1]] !== undefined) {
+            const span = toolOfWeekBtn.querySelector('span');
+            if (span) span.textContent = globalLikesMap[match[1]];
+        }
+    }
+}
+
 // --- Роутинг (Hash-навигация) ---
 function handleHash() {
     const hash = decodeURIComponent(window.location.hash.substring(1));
     if (hash.startsWith('tool=')) {
-        const siteName = hash.replace('tool=', '');
-        openDetail(siteName, false); // false = не менять хэш снова
+        const siteId = hash.replace('tool=', '');
+        openDetail(siteId, false); // false = не менять хэш снова
     } else if (hash.startsWith('category=')) {
         currentCategory = hash.replace('category=', '');
         closeDetail(false);
@@ -110,11 +143,24 @@ function renderToolOfWeek() {
     const domain = new URL(featuredSite.url).hostname;
     const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
     
+    // Используем динамический подчет лайков «на лету» для инструмента недели
+    const actualLikes = globalLikesMap[featuredSite.id] || 0;
+    const isLiked = likedSites.includes(featuredSite.id);
+    const isBookmarked = bookmarks.includes(featuredSite.id);
+
     toolOfWeekContainer.innerHTML = `
         <div class="tool-of-week" onclick="window.location.hash='#tool=${featuredSite.id}'">
-            <div>
+            <div style="flex-grow: 1; padding-right: 20px;">
                 <h2>🔥 Инструмент недели: ${featuredSite.name}</h2>
                 <p>${featuredSite.desc[currentLang]}</p>
+                <div class="card-actions" onclick="event.stopPropagation()" style="margin-top: 15px; display: inline-flex; gap: 15px; border-top: none; padding-top: 0;">
+                    <button class="action-btn like-btn ${isLiked ? 'active' : ''}" onclick="toggleLike('${featuredSite.id}', this)" style="color: white;">
+                        ${isLiked ? '❤️' : '🤍'} <span style="color: white;">${actualLikes}</span>
+                    </button>
+                    <button class="action-btn bookmark-btn ${isBookmarked ? 'active' : ''}" onclick="toggleBookmark('${featuredSite.id}', this)" style="color: white;">
+                        ${isBookmarked ? '⭐' : '☆'}
+                    </button>
+                </div>
             </div>
             <img src="${logoUrl}" alt="" class="site-logo" onerror="this.style.display='none'">
         </div>
@@ -164,7 +210,7 @@ function filterData() {
         const matchesCategory = currentCategory === ui[currentLang].all || catText === currentCategory;
         const matchesSearch = nameText.includes(query) || descText.includes(query) || tagsMatch;
         const matchPrice = currentPrice === 'all' || site.price === currentPrice;
-        const matchesBookmarks = showOnlyBookmarks ? bookmarks.includes(site.name) : true;
+        const matchesBookmarks = showOnlyBookmarks ? bookmarks.includes(site.id) : true;
         
         return matchesCategory && matchesSearch && matchPrice && matchesBookmarks; 
     });
@@ -193,12 +239,11 @@ function filterData() {
         if (site.isHot) badgeHtml = `<span class="badge badge-hot">HOT</span>`;
         if (site.isNew) badgeHtml = `<span class="badge badge-new">NEW</span>`;
 
-        // Обрати внимание: теперь мы используем site.id (который мы добавили в data.js)
-const isBookmarked = bookmarks.includes(site.id);
-const isLiked = likedSites.includes(site.id);
+        const isBookmarked = bookmarks.includes(site.id);
+        const isLiked = likedSites.includes(site.id);
 
-// Берем лайки с сервера или ставим 0, если их еще нет
-const actualLikes = globalLikesMap[site.id] || 0;
+        // Берем лайки с сервера или ставим 0, если их еще нет
+        const actualLikes = globalLikesMap[site.id] || 0;
 
         card.innerHTML = `
             <div class="card-header">
@@ -225,7 +270,7 @@ const actualLikes = globalLikesMap[site.id] || 0;
             </div>
         `;
 
-       card.onclick = () => { window.location.hash = \#tool=${encodeURIComponent(site.name)}`; };`
+        card.onclick = () => { window.location.hash = `#tool=${site.id}`; };
         container.appendChild(card);
     });
 }
@@ -290,10 +335,11 @@ bookmarksBtn.onclick = () => {
 };
 
 // --- Детальный вид ---
-window.openDetail = function(siteId, updateHash = true) { const site = sitesData.find(s => s.id === siteId);
+window.openDetail = function(siteId, updateHash = true) { 
+    const site = sitesData.find(s => s.id === siteId);
     if (!site) return;
 
-    if (updateHash) window.location.hash = \#tool=${siteId}`;`
+    if (updateHash) window.location.hash = `#tool=${siteId}`;
 
     const domain = new URL(site.url).hostname;
     const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
@@ -320,13 +366,13 @@ window.openDetail = function(siteId, updateHash = true) { const site = sitesData
     `;
 
     // Похожие инструменты (по категории)
-    const similar = sitesData.filter(s => s.category[currentLang] === site.category[currentLang] && s.name !== site.name).slice(0, 3);
+    const similar = sitesData.filter(s => s.category[currentLang] === site.category[currentLang] && s.id !== site.id).slice(0, 3);
     similarToolsContainer.innerHTML = '';
     similar.forEach(s => {
         const simCard = document.createElement('div');
         simCard.className = 'card';
         simCard.innerHTML = `<h4>${s.name}</h4><p style="font-size:12px">${s.desc[currentLang]}</p>`;
-        simCard.onclick = () => window.location.hash = \#tool=${s.id}`;`
+        simCard.onclick = () => window.location.hash = `#tool=${s.id}`;
         similarToolsContainer.appendChild(simCard);
     });
 
@@ -343,45 +389,4 @@ window.closeDetail = function(updateHash = true) {
     if (!showOnlyBookmarks) toolOfWeekContainer.classList.remove('hidden');
 };
 
-backBtn.onclick = () => closeDetail(true);
-
-// --- Интерактив (Кнопки, Темы, Язык) ---
-themeToggle.onclick = () => {
-    const isDark = document.body.getAttribute('data-theme') === 'dark';
-    document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    localStorage.setItem('theme', isDark ? 'light' : 'dark');
-};
-
-langToggle.onclick = () => {
-    currentLang = currentLang === 'ru' ? 'en' : 'ru';
-    localStorage.setItem('lang', currentLang);
-    langToggle.textContent = currentLang === 'ru' ? '🇷🇺 RU' : '🇬🇧 EN';
-    updateUI();
-};
-
-randomBtn.onclick = () => {
-    const randomIndex = Math.floor(Math.random() * sitesData.length);
-    window.location.hash = \#tool=${sitesData[randomIndex].id}`;`
-};
-
-searchInput.addEventListener('input', filterData);
-
-// --- Модалки ---
-document.getElementById('suggestBtn').onclick = () => suggestModal.showModal();
-document.getElementById('closeSuggest').onclick = () => suggestModal.close();
-document.getElementById('changelogBtn').onclick = () => {
-    const list = document.getElementById('changelogList');
-    list.innerHTML = appChangelog.map(log => `
-        <li>
-            <span class="changelog-date">${log.date}</span>
-            <span>${currentLang === 'ru' ? log.ru : log.en}</span>
-        </li>
-    `).join('');
-    changelogModal.showModal();
-};
-document.getElementById('closeChangelog').onclick = () => changelogModal.close();
-
-// Ждем, пока скачаются реальные лайки, и только потом отрисовываем страницу
-loadLikes().then(() => {
-    handleHash(); 
-});
+backBtn.onclick
