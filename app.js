@@ -389,4 +389,49 @@ window.closeDetail = function(updateHash = true) {
     if (!showOnlyBookmarks) toolOfWeekContainer.classList.remove('hidden');
 };
 
-backBtn.onclick
+backBtn.onclick = () => closeDetail(true);
+
+// --- Интерактив (Кнопки, Темы, Язык) ---
+themeToggle.onclick = () => {
+    const isDark = document.body.getAttribute('data-theme') === 'dark';
+    document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('theme', isDark ? 'light' : 'dark');
+};
+
+langToggle.onclick = () => {
+    currentLang = currentLang === 'ru' ? 'en' : 'ru';
+    localStorage.setItem('lang', currentLang);
+    langToggle.textContent = currentLang === 'ru' ? '🇷🇺 RU' : '🇬🇧 EN';
+    updateUI();
+};
+
+randomBtn.onclick = () => {
+    const randomIndex = Math.floor(Math.random() * sitesData.length);
+    window.location.hash = `#tool=${sitesData[randomIndex].id}`;
+};
+
+searchInput.addEventListener('input', filterData);
+
+// --- Модалки ---
+document.getElementById('suggestBtn').onclick = () => suggestModal.showModal();
+document.getElementById('closeSuggest').onclick = () => suggestModal.close();
+document.getElementById('changelogBtn').onclick = () => {
+    const list = document.getElementById('changelogList');
+    list.innerHTML = appChangelog.map(log => `
+        <li>
+            <span class="changelog-date">${log.date}</span>
+            <span>${currentLang === 'ru' ? log.ru : log.en}</span>
+        </li>
+    `).join('');
+    changelogModal.showModal();
+};
+document.getElementById('closeChangelog').onclick = () => changelogModal.close();
+
+// 1. Мгновенно отрисовываем интерфейс и карточки (лайки пока будут равны 0)
+handleHash();
+
+// 2. В фоне асинхронно запрашиваем лайки у Supabase
+loadLikes().then(() => {
+    // 3. Как только лайки приехали — мягко обновляем цифры на карточках без перезагрузки страницы
+    updateLikesOnLiveCards();
+});
