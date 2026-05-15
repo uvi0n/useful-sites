@@ -20,10 +20,11 @@ const similarToolsContainer = document.getElementById('similar-tools');
 const suggestModal = document.getElementById('suggestModal');
 const changelogModal = document.getElementById('changelogModal');
 
+// Твои ключи (используем стабильный anon токен)
 const SUPABASE_URL = 'https://nrloiaytvvpghfahjphz.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybG9pYXl0dnZwZ2hmYWhqcGh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NjQ4MjcsImV4cCI6MjA5NDQ0MDgyN30.lFirc7ueW0LEHBk4Rv_VyqbkwHsc4GWIyu7_pkKEPd8';
 
-// Глобальный объект, где мы будем хранить лайки после загрузки с сервера
+// Глобальный объект для хранения лайков "на лету"
 let globalLikesMap = {};
 
 const ui = {
@@ -44,6 +45,7 @@ let likedSites = JSON.parse(localStorage.getItem('myLikes')) || [];
 if (currentTheme === 'dark') document.body.setAttribute('data-theme', 'dark');
 langToggle.textContent = currentLang === 'ru' ? '🇷🇺 RU' : '🇬🇧 EN';
 
+// --- Работа с Supabase ---
 async function loadLikes() {
     try {
         const response = await fetch(`${SUPABASE_URL}/rest/v1/likes?select=site_id,likes_count`, {
@@ -52,38 +54,32 @@ async function loadLikes() {
                 'Authorization': `Bearer ${SUPABASE_KEY}`
             }
         });
+        if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
-        // Записываем данные в формате { "google-ai-studio": 15, "chatgpt": 42 }
+        
         data.forEach(item => {
             globalLikesMap[item.site_id] = item.likes_count;
         });
     } catch (error) {
-        console.error('Ошибка при загрузке лайков:', error);
+        console.error('Ошибка при загрузке лайков (возможно нужна команда disable RLS):', error);
     }
 }
 
 function updateLikesOnLiveCards() {
-    // Находим все кнопки лайков, которые сейчас отрендерены на странице
     const likeButtons = container.querySelectorAll('.like-btn');
-    
     likeButtons.forEach(btn => {
-        // У каждой кнопки при рендере мы привязали onclick="toggleLike('id_сайта', this)"
         const onclickText = btn.getAttribute('onclick');
         const match = onclickText.match(/toggleLike\('([^']+)'/);
         
         if (match && match[1]) {
             const siteId = match[1];
-            // Если для этого сайта в базе есть лайки, обновляем цифру внутри тега <span>
             if (globalLikesMap[siteId] !== undefined) {
                 const span = btn.querySelector('span');
-                if (span) {
-                    span.textContent = globalLikesMap[siteId];
-                }
+                if (span) span.textContent = globalLikesMap[siteId];
             }
         }
     });
     
-    // Также обновим баннер "Инструмент недели", если он активен
     const toolOfWeekBtn = document.querySelector('#tool-of-week-container .like-btn');
     if (toolOfWeekBtn) {
         const onclickText = toolOfWeekBtn.getAttribute('onclick');
@@ -100,7 +96,7 @@ function handleHash() {
     const hash = decodeURIComponent(window.location.hash.substring(1));
     if (hash.startsWith('tool=')) {
         const siteId = hash.replace('tool=', '');
-        openDetail(siteId, false); // false = не менять хэш снова
+        openDetail(siteId, false);
     } else if (hash.startsWith('category=')) {
         currentCategory = hash.replace('category=', '');
         closeDetail(false);
@@ -118,7 +114,6 @@ function updateUI() {
     document.getElementById('adText').textContent = ui[currentLang].ad;
     backBtn.textContent = ui[currentLang].back;
     
-    // Если хэш не задал категорию, ставим "Все"
     if (!window.location.hash.startsWith('#category=')) {
         currentCategory = ui[currentLang].all; 
     }
@@ -137,14 +132,11 @@ function renderToolOfWeek() {
         return;
     }
     
-    // Берем первый сайт с флагом isHot (или любой случайный)
     const featuredSite = sitesData.find(s => s.isHot) || sitesData[0];
-    
     const domain = new URL(featuredSite.url).hostname;
     const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
     
-    // Используем динамический подчет лайков «на лету» для инструмента недели
-    const actualLikes = globalLikesMap[featuredSite.id] || 0;
+    const actualLikes = globalLikesMap[featuredSite.id] !== undefined ? globalLikesMap[featuredSite.id] : 0;
     const isLiked = likedSites.includes(featuredSite.id);
     const isBookmarked = bookmarks.includes(featuredSite.id);
 
@@ -234,18 +226,13 @@ function filterData() {
         const priceLabel = site.price ? ui[currentLang][site.price] : '';
         const priceHtml = site.price ? `<span class="price-badge price-${site.price}">${priceLabel}</span>` : '';
         
-        // Бейджи
         let badgeHtml = '';
         if (site.isHot) badgeHtml = `<span class="badge badge-hot">HOT</span>`;
         if (site.isNew) badgeHtml = `<span class="badge badge-new">NEW</span>`;
 
         const isBookmarked = bookmarks.includes(site.id);
         const isLiked = likedSites.includes(site.id);
-
-    
-        // Берем лайки с сервера или ставим 0, если их еще нет в базе Supabase
-        // Берем лайки с сервера или ставим 0, если их еще нет в базе Supabase
-const actualLikes = globalLikesMap[site.id] !== undefined ? globalLikesMap[site.id] : 0;
+        const actualLikes = globalLikesMap[site.id] !== undefined ? globalLikesMap[site.id] : 0;
 
         card.innerHTML = `
             <div class="card-header">
@@ -296,34 +283,14 @@ window.toggleLike = function(siteId, btnElement) {
     let currentCount = parseInt(span.textContent);
 
     if (likedSites.includes(siteId)) {
-        // --- 1. УБИРАЕМ ЛАЙК ---
+        // --- СНИМАЕМ ЛАЙК ---
         likedSites = likedSites.filter(id => id !== siteId);
         btnElement.classList.remove('active');
         const newCount = Math.max(currentCount - 1, 0);
         btnElement.innerHTML = `🤍 <span>${newCount}</span>`;
         globalLikesMap[siteId] = newCount;
 
-        // Отправляем прямой UPSERT запрос (обновляем запись в базе)
-        fetch(`${SUPABASE_URL}/rest/v1/likes?site_id=eq.${siteId}`, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json', 
-                'apikey': SUPABASE_KEY, 
-                'Authorization': `Bearer ${SUPABASE_KEY}`,
-                'Prefer': 'resolution=merge-duplicates' // Если строка есть, база её обновит
-            },
-            body: JSON.stringify({ site_id: siteId, likes_count: newCount })
-        }).catch(err => console.error("Ошибка при снятии лайка:", err));
-
-    } else {
-        // --- 2. СТАВИМ ЛАЙК ---
-        likedSites.push(siteId);
-        btnElement.classList.add('active');
-        const newCount = currentCount + 1;
-        btnElement.innerHTML = `❤️ <span>${newCount}</span>`;
-        globalLikesMap[siteId] = newCount;
-
-        // Отправляем прямой UPSERT запрос (создаем или обновляем запись)
+        // Отправляем безопасный UPSERT на базовый адрес
         fetch(`${SUPABASE_URL}/rest/v1/likes`, {
             method: 'POST',
             headers: { 
@@ -333,7 +300,27 @@ window.toggleLike = function(siteId, btnElement) {
                 'Prefer': 'resolution=merge-duplicates'
             },
             body: JSON.stringify({ site_id: siteId, likes_count: newCount })
-        }).catch(err => console.error("Ошибка при отправке лайка:", err));
+        }).catch(err => console.error("Ошибка сети при снятии лайка:", err));
+
+    } else {
+        // --- СТАВИМ ЛАЙК ---
+        likedSites.push(siteId);
+        btnElement.classList.add('active');
+        const newCount = currentCount + 1;
+        btnElement.innerHTML = `❤️ <span>${newCount}</span>`;
+        globalLikesMap[siteId] = newCount;
+
+        // Отправляем безопасный UPSERT на базовый адрес
+        fetch(`${SUPABASE_URL}/rest/v1/likes`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'apikey': SUPABASE_KEY, 
+                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                'Prefer': 'resolution=merge-duplicates'
+            },
+            body: JSON.stringify({ site_id: siteId, likes_count: newCount })
+        }).catch(err => console.error("Ошибка сети при отправке лайка:", err));
     }
     localStorage.setItem('myLikes', JSON.stringify(likedSites));
 };
@@ -341,8 +328,8 @@ window.toggleLike = function(siteId, btnElement) {
 bookmarksBtn.onclick = () => {
     showOnlyBookmarks = !showOnlyBookmarks;
     bookmarksBtn.classList.toggle('active', showOnlyBookmarks);
-    currentCategory = ui[currentLang].all; // Сбрасываем фильтр категорий
-    window.location.hash = ''; // Очищаем роутинг
+    currentCategory = ui[currentLang].all;
+    window.location.hash = '';
     updateUI();
 };
 
@@ -377,7 +364,6 @@ window.openDetail = function(siteId, updateHash = true) {
         </div>
     `;
 
-    // Похожие инструменты (по категории)
     const similar = sitesData.filter(s => s.category[currentLang] === site.category[currentLang] && s.id !== site.id).slice(0, 3);
     similarToolsContainer.innerHTML = '';
     similar.forEach(s => {
@@ -403,7 +389,6 @@ window.closeDetail = function(updateHash = true) {
 
 backBtn.onclick = () => closeDetail(true);
 
-// --- Интерактив (Кнопки, Темы, Язык) ---
 themeToggle.onclick = () => {
     const isDark = document.body.getAttribute('data-theme') === 'dark';
     document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
@@ -439,11 +424,12 @@ document.getElementById('changelogBtn').onclick = () => {
 };
 document.getElementById('closeChangelog').onclick = () => changelogModal.close();
 
-// 1. Мгновенно отрисовываем интерфейс и карточки (лайки пока будут равны 0)
+// --- ЗАПУСК ---
+// 1. Мгновенно отрисовываем карточки (сайты берутся из data.js)
 handleHash();
 
-// 2. В фоне асинхронно запрашиваем лайки у Supabase
+// 2. В фоне тянем лайки из Supabase
 loadLikes().then(() => {
-    // 3. Как только лайки приехали — мягко обновляем цифры на карточках без перезагрузки страницы
+    // 3. Как только лайки пришли — плавно обновляем интерфейс
     updateLikesOnLiveCards();
 });
