@@ -11,6 +11,7 @@ const backBtn = document.getElementById('backBtn');
 const headerControls = document.querySelector('.header-content');
 const filtersPanel = document.getElementById('filters');
 const statsCounter = document.getElementById('statsCounter');
+const likesLoader = document.getElementById('likesLoader'); // НОВОЕ: Лоадер
 const randomBtn = document.getElementById('randomBtn');
 const bookmarksBtn = document.getElementById('bookmarksBtn');
 const toolOfWeekContainer = document.getElementById('tool-of-week-container');
@@ -20,12 +21,13 @@ const similarToolsContainer = document.getElementById('similar-tools');
 const suggestModal = document.getElementById('suggestModal');
 const changelogModal = document.getElementById('changelogModal');
 
-// Твои ключи (используем стабильный anon токен)
+// Твои ключи
 const SUPABASE_URL = 'https://nrloiaytvvpghfahjphz.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybG9pYXl0dnZwZ2hmYWhqcGh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NjQ4MjcsImV4cCI6MjA5NDQ0MDgyN30.lFirc7ueW0LEHBk4Rv_VyqbkwHsc4GWIyu7_pkKEPd8';
 
-// Глобальный объект для хранения лайков "на лету"
+// Глобальные объекты и флаги
 let globalLikesMap = {};
+let isLikesLoaded = false; // НОВОЕ: Флаг загрузки
 
 const ui = {
     ru: { searchPlaceholder: "Поиск (имя, теги)...", all: "Все", found: "Найдено: ", anyPrice: "Любая цена", free: "Бесплатно", freemium: "Частично", paid: "Платно", ad: "Нашли ошибку? По вопросам рекламы: ", openBtn: "Открыть", visitBtn: "Перейти на сайт", pros: "Плюсы", cons: "Минусы", back: "⬅ Назад" },
@@ -61,7 +63,7 @@ async function loadLikes() {
             globalLikesMap[item.site_id] = item.likes_count;
         });
     } catch (error) {
-        console.error('Ошибка при загрузке лайков (возможно нужна команда disable RLS):', error);
+        console.error('Ошибка при загрузке лайков:', error);
     }
 }
 
@@ -73,9 +75,10 @@ function updateLikesOnLiveCards() {
         
         if (match && match[1]) {
             const siteId = match[1];
-            if (globalLikesMap[siteId] !== undefined) {
-                const span = btn.querySelector('span');
-                if (span) span.textContent = globalLikesMap[siteId];
+            const span = btn.querySelector('span');
+            if (span) {
+                // Если данные пришли, ставим цифру, если сайта нет в базе — ставим 0
+                span.textContent = globalLikesMap[siteId] !== undefined ? globalLikesMap[siteId] : 0;
             }
         }
     });
@@ -84,9 +87,11 @@ function updateLikesOnLiveCards() {
     if (toolOfWeekBtn) {
         const onclickText = toolOfWeekBtn.getAttribute('onclick');
         const match = onclickText.match(/toggleLike\('([^']+)'/);
-        if (match && match[1] && globalLikesMap[match[1]] !== undefined) {
+        if (match && match[1]) {
             const span = toolOfWeekBtn.querySelector('span');
-            if (span) span.textContent = globalLikesMap[match[1]];
+            if (span) {
+                span.textContent = globalLikesMap[match[1]] !== undefined ? globalLikesMap[match[1]] : 0;
+            }
         }
     }
 }
@@ -136,7 +141,9 @@ function renderToolOfWeek() {
     const domain = new URL(featuredSite.url).hostname;
     const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
     
-    const actualLikes = globalLikesMap[featuredSite.id] !== undefined ? globalLikesMap[featuredSite.id] : 0;
+    // НОВОЕ: Если лайки еще не загрузились, показываем "..."
+    const actualLikes = isLikesLoaded ? (globalLikesMap[featuredSite.id] !== undefined ? globalLikesMap[featuredSite.id] : 0) : '...';
+    
     const isLiked = likedSites.includes(featuredSite.id);
     const isBookmarked = bookmarks.includes(featuredSite.id);
 
@@ -232,7 +239,9 @@ function filterData() {
 
         const isBookmarked = bookmarks.includes(site.id);
         const isLiked = likedSites.includes(site.id);
-        const actualLikes = globalLikesMap[site.id] !== undefined ? globalLikesMap[site.id] : 0;
+        
+        // НОВОЕ: Если лайки еще не загрузились, показываем "..."
+        const actualLikes = isLikesLoaded ? (globalLikesMap[site.id] !== undefined ? globalLikesMap[site.id] : 0) : '...';
 
         card.innerHTML = `
             <div class="card-header">
@@ -280,7 +289,8 @@ window.toggleBookmark = function(siteId, btnElement) {
 
 window.toggleLike = function(siteId, btnElement) {
     const span = btnElement.querySelector('span');
-    let currentCount = parseInt(span.textContent);
+    // Если пользователь нажал до загрузки, считаем что там был 0
+    let currentCount = span.textContent === '...' ? 0 : parseInt(span.textContent);
 
     if (likedSites.includes(siteId)) {
         // --- СНИМАЕМ ЛАЙК ---
@@ -290,7 +300,6 @@ window.toggleLike = function(siteId, btnElement) {
         btnElement.innerHTML = `🤍 <span>${newCount}</span>`;
         globalLikesMap[siteId] = newCount;
 
-        // Отправляем безопасный UPSERT на базовый адрес
         fetch(`${SUPABASE_URL}/rest/v1/likes`, {
             method: 'POST',
             headers: { 
@@ -310,7 +319,6 @@ window.toggleLike = function(siteId, btnElement) {
         btnElement.innerHTML = `❤️ <span>${newCount}</span>`;
         globalLikesMap[siteId] = newCount;
 
-        // Отправляем безопасный UPSERT на базовый адрес
         fetch(`${SUPABASE_URL}/rest/v1/likes`, {
             method: 'POST',
             headers: { 
@@ -425,11 +433,12 @@ document.getElementById('changelogBtn').onclick = () => {
 document.getElementById('closeChangelog').onclick = () => changelogModal.close();
 
 // --- ЗАПУСК ---
-// 1. Мгновенно отрисовываем карточки (сайты берутся из data.js)
-handleHash();
+if (likesLoader) likesLoader.style.display = 'inline-flex'; // Показываем лоадер
 
-// 2. В фоне тянем лайки из Supabase
+handleHash(); // Отрисовываем карточки (везде стоят "...")
+
 loadLikes().then(() => {
-    // 3. Как только лайки пришли — плавно обновляем интерфейс
-    updateLikesOnLiveCards();
+    isLikesLoaded = true; // Отмечаем, что загрузка завершена
+    if (likesLoader) likesLoader.style.display = 'none'; // Прячем лоадер в шапке
+    updateLikesOnLiveCards(); // Превращаем "..." в реальные цифры
 });
