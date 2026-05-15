@@ -21,7 +21,7 @@ const suggestModal = document.getElementById('suggestModal');
 const changelogModal = document.getElementById('changelogModal');
 
 const SUPABASE_URL = 'https://nrloiaytvvpghfahjphz.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_IJqga5K9JPkJA438GWNwUg_0kCDwcgb';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybG9pYXl0dnZwZ2hmYWhqcGh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NjQ4MjcsImV4cCI6MjA5NDQ0MDgyN30.lFirc7ueW0LEHBk4Rv_VyqbkwHsc4GWIyu7_pkKEPd8';
 
 // Глобальный объект, где мы будем хранить лайки после загрузки с сервера
 let globalLikesMap = {};
@@ -242,8 +242,10 @@ function filterData() {
         const isBookmarked = bookmarks.includes(site.id);
         const isLiked = likedSites.includes(site.id);
 
-        // Берем лайки с сервера или ставим 0, если их еще нет
-        const actualLikes = globalLikesMap[site.id] || 0;
+    
+        // Берем лайки с сервера или ставим 0, если их еще нет в базе Supabase
+        // Берем лайки с сервера или ставим 0, если их еще нет в базе Supabase
+const actualLikes = globalLikesMap[site.id] !== undefined ? globalLikesMap[site.id] : 0;
 
         card.innerHTML = `
             <div class="card-header">
@@ -294,34 +296,44 @@ window.toggleLike = function(siteId, btnElement) {
     let currentCount = parseInt(span.textContent);
 
     if (likedSites.includes(siteId)) {
-        // Убираем лайк (Оптимистичный UI - сразу меняем счетчик на экране)
+        // --- 1. УБИРАЕМ ЛАЙК ---
         likedSites = likedSites.filter(id => id !== siteId);
         btnElement.classList.remove('active');
         const newCount = Math.max(currentCount - 1, 0);
         btnElement.innerHTML = `🤍 <span>${newCount}</span>`;
         globalLikesMap[siteId] = newCount;
 
-        // Отправляем запрос в Supabase на функцию decrement
-        fetch(`${SUPABASE_URL}/rest/v1/rpc/decrement_like`, {
+        // Отправляем прямой UPSERT запрос (обновляем запись в базе)
+        fetch(`${SUPABASE_URL}/rest/v1/likes?site_id=eq.${siteId}`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` },
-            body: JSON.stringify({ site_id_param: siteId })
-        });
+            headers: { 
+                'Content-Type': 'application/json', 
+                'apikey': SUPABASE_KEY, 
+                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                'Prefer': 'resolution=merge-duplicates' // Если строка есть, база её обновит
+            },
+            body: JSON.stringify({ site_id: siteId, likes_count: newCount })
+        }).catch(err => console.error("Ошибка при снятии лайка:", err));
 
     } else {
-        // Ставим лайк
+        // --- 2. СТАВИМ ЛАЙК ---
         likedSites.push(siteId);
         btnElement.classList.add('active');
         const newCount = currentCount + 1;
         btnElement.innerHTML = `❤️ <span>${newCount}</span>`;
         globalLikesMap[siteId] = newCount;
 
-        // Отправляем запрос в Supabase на функцию increment
-        fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_like`, {
+        // Отправляем прямой UPSERT запрос (создаем или обновляем запись)
+        fetch(`${SUPABASE_URL}/rest/v1/likes`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` },
-            body: JSON.stringify({ site_id_param: siteId })
-        });
+            headers: { 
+                'Content-Type': 'application/json', 
+                'apikey': SUPABASE_KEY, 
+                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                'Prefer': 'resolution=merge-duplicates'
+            },
+            body: JSON.stringify({ site_id: siteId, likes_count: newCount })
+        }).catch(err => console.error("Ошибка при отправке лайка:", err));
     }
     localStorage.setItem('myLikes', JSON.stringify(likedSites));
 };
