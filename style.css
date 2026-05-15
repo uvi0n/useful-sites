@@ -319,3 +319,10 @@ body {
     50% { opacity: 1; }
     100% { opacity: 0.4; }
 }
+
+/* Кнопка активных лайков в хедере */
+#likesBtn.active { 
+    background: #ff4757; /* Красный цвет */
+    color: white; 
+    border-color: #ff4757; 
+}
