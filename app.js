@@ -20,6 +20,12 @@ const similarToolsContainer = document.getElementById('similar-tools');
 const suggestModal = document.getElementById('suggestModal');
 const changelogModal = document.getElementById('changelogModal');
 
+const SUPABASE_URL = 'https://nrloiaytvvpghfahjphz.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_IJqga5K9JPkJA438GWNwUg_0kCDwcgb';
+
+// Глобальный объект, где мы будем хранить лайки после загрузки с сервера
+let globalLikesMap = {};
+
 const ui = {
     ru: { searchPlaceholder: "Поиск (имя, теги)...", all: "Все", found: "Найдено: ", anyPrice: "Любая цена", free: "Бесплатно", freemium: "Частично", paid: "Платно", ad: "Нашли ошибку? По вопросам рекламы: ", openBtn: "Открыть", visitBtn: "Перейти на сайт", pros: "Плюсы", cons: "Минусы", back: "⬅ Назад" },
     en: { searchPlaceholder: "Search (name, tags)...", all: "All", found: "Found: ", anyPrice: "Any Price", free: "Free", freemium: "Freemium", paid: "Paid", ad: "Found an error? For advertising: ", openBtn: "Open", visitBtn: "Visit Site", pros: "Pros", cons: "Cons", back: "⬅ Back" }
@@ -37,6 +43,24 @@ let likedSites = JSON.parse(localStorage.getItem('myLikes')) || [];
 
 if (currentTheme === 'dark') document.body.setAttribute('data-theme', 'dark');
 langToggle.textContent = currentLang === 'ru' ? '🇷🇺 RU' : '🇬🇧 EN';
+
+async function loadLikes() {
+    try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/likes?select=site_id,likes_count`, {
+            headers: {
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${SUPABASE_KEY}`
+            }
+        });
+        const data = await response.json();
+        // Записываем данные в формате { "google-ai-studio": 15, "chatgpt": 42 }
+        data.forEach(item => {
+            globalLikesMap[item.site_id] = item.likes_count;
+        });
+    } catch (error) {
+        console.error('Ошибка при загрузке лайков:', error);
+    }
+}
 
 // --- Роутинг (Hash-навигация) ---
 function handleHash() {
@@ -169,11 +193,12 @@ function filterData() {
         if (site.isHot) badgeHtml = `<span class="badge badge-hot">HOT</span>`;
         if (site.isNew) badgeHtml = `<span class="badge badge-new">NEW</span>`;
 
-        const isBookmarked = bookmarks.includes(site.name);
-        const isLiked = likedSites.includes(site.name);
-        
-        // TODO: Supabase - тут нужно будет брать likes из БД
-        const fakeLikes = site.name.length * 14; 
+        // Обрати внимание: теперь мы используем site.id (который мы добавили в data.js)
+const isBookmarked = bookmarks.includes(site.id);
+const isLiked = likedSites.includes(site.id);
+
+// Берем лайки с сервера или ставим 0, если их еще нет
+const actualLikes = globalLikesMap[site.id] || 0;
 
         card.innerHTML = `
             <div class="card-header">
@@ -190,10 +215,10 @@ function filterData() {
             <p class="desc">${site.desc[currentLang]}</p>
             
             <div class="card-actions" onclick="event.stopPropagation()">
-                <button class="action-btn like-btn ${isLiked ? 'active' : ''}" onclick="toggleLike('${site.name}', this)">
-                    ${isLiked ? '❤️' : '🤍'} <span>${fakeLikes}</span>
+                <button class="action-btn like-btn ${isLiked ? 'active' : ''}" onclick="toggleLike('${site.id}', this)">
+                    ${isLiked ? '❤️' : '🤍'} <span>${actualLikes}</span>
                 </button>
-                <button class="action-btn bookmark-btn ${isBookmarked ? 'active' : ''}" onclick="toggleBookmark('${site.name}', this)">
+                <button class="action-btn bookmark-btn ${isBookmarked ? 'active' : ''}" onclick="toggleBookmark('${site.id}', this)">
                     ${isBookmarked ? '⭐' : '☆'}
                 </button>
                 <a href="${site.url}" target="_blank" class="btn" style="padding: 6px 12px; font-size: 12px;">${ui[currentLang].openBtn}</a>
@@ -205,35 +230,53 @@ function filterData() {
     });
 }
 
-// --- Лайки и Закладки ---
-window.toggleBookmark = function(siteName, btnElement) {
-    if (bookmarks.includes(siteName)) {
-        bookmarks = bookmarks.filter(n => n !== siteName);
+window.toggleBookmark = function(siteId, btnElement) {
+    if (bookmarks.includes(siteId)) {
+        bookmarks = bookmarks.filter(id => id !== siteId);
         btnElement.classList.remove('active');
         btnElement.innerHTML = '☆';
     } else {
-        bookmarks.push(siteName);
+        bookmarks.push(siteId);
         btnElement.classList.add('active');
         btnElement.innerHTML = '⭐';
     }
     localStorage.setItem('myBookmarks', JSON.stringify(bookmarks));
-    // Если мы сейчас в режиме "Только закладки", обновляем список
     if (showOnlyBookmarks) filterData();
 };
 
-window.toggleLike = function(siteName, btnElement) {
-    // TODO: Supabase - тут нужно отправлять POST запрос на инкремент/декремент лайка в БД
+window.toggleLike = function(siteId, btnElement) {
     const span = btnElement.querySelector('span');
-    let count = parseInt(span.textContent);
+    let currentCount = parseInt(span.textContent);
 
-    if (likedSites.includes(siteName)) {
-        likedSites = likedSites.filter(n => n !== siteName);
+    if (likedSites.includes(siteId)) {
+        // Убираем лайк (Оптимистичный UI - сразу меняем счетчик на экране)
+        likedSites = likedSites.filter(id => id !== siteId);
         btnElement.classList.remove('active');
-        btnElement.innerHTML = `🤍 <span>${count - 1}</span>`;
+        const newCount = Math.max(currentCount - 1, 0);
+        btnElement.innerHTML = `🤍 <span>${newCount}</span>`;
+        globalLikesMap[siteId] = newCount;
+
+        // Отправляем запрос в Supabase на функцию decrement
+        fetch(`${SUPABASE_URL}/rest/v1/rpc/decrement_like`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` },
+            body: JSON.stringify({ site_id_param: siteId })
+        });
+
     } else {
-        likedSites.push(siteName);
+        // Ставим лайк
+        likedSites.push(siteId);
         btnElement.classList.add('active');
-        btnElement.innerHTML = `❤️ <span>${count + 1}</span>`;
+        const newCount = currentCount + 1;
+        btnElement.innerHTML = `❤️ <span>${newCount}</span>`;
+        globalLikesMap[siteId] = newCount;
+
+        // Отправляем запрос в Supabase на функцию increment
+        fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_like`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` },
+            body: JSON.stringify({ site_id_param: siteId })
+        });
     }
     localStorage.setItem('myLikes', JSON.stringify(likedSites));
 };
@@ -339,5 +382,7 @@ document.getElementById('changelogBtn').onclick = () => {
 };
 document.getElementById('closeChangelog').onclick = () => changelogModal.close();
 
-// Запуск
-handleHash(); // Проверяем URL при загрузке
+// Ждем, пока скачаются реальные лайки, и только потом отрисовываем страницу
+loadLikes().then(() => {
+    handleHash(); 
+});
