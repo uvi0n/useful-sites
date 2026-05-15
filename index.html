@@ -3,34 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- НОВОЕ: SEO Описание сайта для поисковиков -->
-    <meta name="description" content="free-webtools — огромная коллекция лучших бесплатных нейросетей, инструментов для дизайна, разработки, архитектуры и учебы.">
-    <title>free-webtools | Полезные сайты</title>
+    <title>free-webtools | Полезные сайты и нейросети</title>
+    
+    <meta name="description" content="Огромная коллекция бесплатных нейросетей, инструментов для дизайна, разработки и учебы.">
+    <meta property="og:title" content="free-webtools | Лучшие бесплатные инструменты">
+    <meta property="og:description" content="Сборник топовых сервисов для работы, учебы и дизайна.">
+    <meta property="og:image" content="https://uvi0n.github.io/free-webtools.ru/preview.jpg"> <meta property="og:url" content="https://uvi0n.github.io/free-webtools.ru/">
+    
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
-</head>
+    
+    </head>
 <body>
 
-    <!-- Рекламная плашка -->
     <div class="ad-banner" id="adBanner">
-        <span id="adText">Нашли ошибку? Хотите добавить сайт? По вопросам рекламы: </span>
+        <span id="adText">Нашли ошибку? По вопросам рекламы: </span>
         <a href="mailto:inianovbob@gmail.com" class="ad-link">inianovbob@gmail.com</a>
     </div>
 
-    <!-- Закрепленная шапка -->
     <header class="header">
         <div class="header-content">
-            <div class="logo">🚀 free-webtools</div>
+            <div class="logo" onclick="window.location.hash=''; window.location.reload();" style="cursor:pointer;">🚀 free-webtools</div>
             
-            <!-- НОВОЕ: Блок для счетчика сайтов -->
             <div id="statsCounter" class="stats-counter"></div>
 
             <div class="search-wrapper">
-                <input type="text" class="search-box" id="searchInput" placeholder="Поиск инструментов...">
+                <input type="text" class="search-box" id="searchInput" placeholder="Поиск (название, теги)...">
             </div>
             
             <div class="header-controls">
-                <!-- НОВОЕ: Кнопка Случайный сайт (Кубик) -->
+                <button class="icon-btn" id="suggestBtn" title="Предложить сайт">💡</button>
+                <button class="icon-btn" id="changelogBtn" title="Обновления">📜</button>
+                <button class="icon-btn" id="bookmarksBtn" title="Мои закладки">⭐</button>
                 <button class="icon-btn" id="randomBtn" title="Случайный сайт">🎲</button>
                 <button class="icon-btn" id="langToggle">🇷🇺 RU</button>
                 <button class="icon-btn" id="themeToggle">🌓</button>
@@ -41,14 +45,39 @@
         <div class="filters-container price-filters" id="priceFilters"></div>
     </header>
 
-    <!-- Сетка карточек -->
+    <section id="tool-of-week-container" class="container hidden"></section>
+
+    <section id="collections-container" class="container collections-grid hidden"></section>
+
     <main class="container" id="sites-container"></main>
 
-    <!-- Детальный просмотр (скрыт по умолчанию) -->
     <div id="detail-view" class="detail-view hidden">
         <button class="icon-btn" id="backBtn">⬅ Назад / Back</button>
         <div id="detail-content" class="detail-content"></div>
+        <h3 id="similar-title" style="margin-top: 40px; text-align: center;">Похожие инструменты</h3>
+        <div id="similar-tools" class="container" style="margin-top: 20px;"></div>
     </div>
+
+    <dialog id="suggestModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeSuggest">×</span>
+            <h2>Предложить инструмент</h2>
+            <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" id="suggestForm">
+                <input type="text" name="Название" placeholder="Название сайта" required>
+                <input type="url" name="Ссылка" placeholder="https://..." required>
+                <textarea name="Описание" placeholder="Почему его стоит добавить?" required></textarea>
+                <button type="submit" class="btn">Отправить</button>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog id="changelogModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeChangelog">×</span>
+            <h2>История обновлений</h2>
+            <ul id="changelogList" class="changelog-list"></ul>
+        </div>
+    </dialog>
 
     <script src="data.js"></script>
     <script src="app.js"></script>
