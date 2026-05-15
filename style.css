@@ -305,3 +305,17 @@ body {
 
 /* Кнопка активных фильтров в хедере */
 #bookmarksBtn.active { background: var(--accent-color); color: white; }
+
+/* Индикатор загрузки */
+.pulse-loader {
+    animation: pulse 1.5s infinite;
+    background: rgba(243, 156, 18, 0.2) !important;
+    color: #f39c12 !important;
+    border-color: #f39c12 !important;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { opacity: 0.4; }
+}
