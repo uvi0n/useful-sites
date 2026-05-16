@@ -253,7 +253,7 @@ function filterData() {
             adCard.className = "card ad-card-grid";
             adCard.innerHTML = `
                 <div class="ad-card-icon">🎯</div>
-                <div class="ad-card-title">${currentLang === 'ru' ? 'Здесь могла бы быть ваша реклама' : 'Place your ad here'}</div>
+                <div class="ad-card-title">${currentLang === 'ru' ? 'Здесь может быть ваша реклама' : 'Place your ad here'}</div>
                 <div class="ad-card-link">inianovbob@gmail.com</div>
             `;
             container.appendChild(adCard);
