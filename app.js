@@ -188,9 +188,14 @@ function filterData() {
 
     filtered.forEach((site, index) => {
         // --- ВСТАВКА РЕКЛАМЫ (на 2-е место, только если showAd true) ---
+        // --- ВСТАВКА РЕКЛАМЫ ---
         if (index === 1 && showAd) {
             const adCard = document.createElement('a');
-            adCard.href = "mailto:inianovbob@gmail.com?subject=Реклама%20на%20free-webtools"; 
+            
+            // НОВОЕ: Прямая ссылка на веб-версию Gmail
+            adCard.href = "https://mail.google.com/mail/?view=cm&fs=1&to=inianovbob@gmail.com&su=Реклама%20на%20free-webtools";
+            adCard.target = "_blank"; // Открываем в новой вкладке
+            
             adCard.className = "card ad-card-grid";
             adCard.innerHTML = `
                 <div class="ad-card-icon">🎯</div>
@@ -251,15 +256,19 @@ function filterData() {
     // Если найден всего 1 сайт и фильтры сброшены, ставим рекламу после него
     if (filtered.length === 1 && showAd) {
         const adCard = document.createElement('a');
-        adCard.href = "mailto:inianovbob@gmail.com?subject=Реклама%20на%20free-webtools";
-        adCard.className = "card ad-card-grid";
-        adCard.innerHTML = `
-            <div class="ad-card-icon">🎯</div>
-            <div class="ad-card-title">${currentLang === 'ru' ? 'Здесь могла бы быть ваша реклама' : 'Place your ad here'}</div>
-            <div class="ad-card-link">inianovbob@gmail.com</div>
-        `;
-        container.appendChild(adCard);
-    }
+            
+            // НОВОЕ: Прямая ссылка на веб-версию Gmail
+            adCard.href = "https://mail.google.com/mail/?view=cm&fs=1&to=inianovbob@gmail.com&su=Реклама%20на%20free-webtools";
+            adCard.target = "_blank"; // Открываем в новой вкладке
+            
+            adCard.className = "card ad-card-grid";
+            adCard.innerHTML = `
+                <div class="ad-card-icon">🎯</div>
+                <div class="ad-card-title">${currentLang === 'ru' ? 'Здесь могла бы быть ваша реклама' : 'Place your ad here'}</div>
+                <div class="ad-card-link">inianovbob@gmail.com</div>
+            `;
+            container.appendChild(adCard);
+        }
 }
 
 // --- КЛИКИ ПО КНОПКАМ ЗАКЛАДОК И ЛАЙКОВ ---
