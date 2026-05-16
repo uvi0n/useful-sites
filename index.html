@@ -29,11 +29,8 @@
             
             <div class="header-controls">
                 <button class="icon-btn" id="suggestBtn" title="Предложить сайт">💡</button>
-                <button class="icon-btn" id="changelogBtn" title="Обновления">📜</button>
-                <button class="icon-btn" id="randomBtn" title="Случайный сайт">🎲</button>
                 <button class="icon-btn" id="likesBtn" title="Мои лайки">❤️</button>
                 <button class="icon-btn" id="bookmarksBtn" title="Мои закладки">⭐</button>
-                <button class="icon-btn" id="viewToggle" title="Сменить вид (Сетка / Список)">📋</button>
                 <button class="icon-btn" id="langToggle">RU</button>
                 <button class="icon-btn" id="themeToggle">🌓</button>
             </div>
@@ -44,10 +41,17 @@
     </header>
 
     <div class="sort-container" id="sortContainer">
-        <span class="sort-label">Сортировка:</span>
-        <button class="sort-btn active" data-sort="default">По умолчанию</button>
-        <button class="sort-btn" data-sort="top">🔥 Топ (по лайкам)</button>
-        <button class="sort-btn" data-sort="popular">⚡️ Популярные</button>
+        <div class="sort-left">
+            <span class="sort-label">Сортировка:</span>
+            <button class="sort-btn active" data-sort="default">По умолчанию</button>
+            <button class="sort-btn" data-sort="popular">⚡️ Популярные</button>
+        </div>
+        
+        <div class="sort-right">
+            <button class="icon-btn small-btn" id="viewToggle" title="Сменить вид (Сетка / Список)">📋</button>
+            <button class="icon-btn small-btn" id="randomBtn" title="Случайный сайт">🎲</button>
+            <button class="icon-btn small-btn" id="changelogBtn" title="Обновления">📜</button>
+        </div>
     </div>
 
     <section id="collections-container" class="container collections-grid hidden"></section>
