@@ -607,9 +607,33 @@ themeToggle.onclick = () => {
 };
 
 langToggle.onclick = () => {
+    const oldLang = currentLang;
     currentLang = currentLang === 'ru' ? 'en' : 'ru';
     localStorage.setItem('lang', currentLang);
     langToggle.textContent = currentLang === 'ru' ? '🇷🇺 RU' : '🇬🇧 EN';
+    
+    // 1. Если выбрана конкретная категория через хэш в URL, переводим сам хэш
+    // Это автоматически вызовет событие hashchange -> handleHash() -> updateUI()
+    if (window.location.hash.startsWith('#category=')) {
+        const oldCat = decodeURIComponent(window.location.hash.substring(10));
+        const foundSite = sitesData.find(site => site.category[oldLang] === oldCat);
+        if (foundSite) {
+            window.location.hash = `#category=${encodeURIComponent(foundSite.category[currentLang])}`;
+            return; 
+        }
+    }
+
+    // 2. Если хэша нет (выбрано "Все" или активен мультивыбор), 
+    // маппим массив категорий на новый язык вручную
+    currentCategories = currentCategories.map(cat => {
+        if (cat === ui[oldLang].all) {
+            return ui[currentLang].all; // "Все" превращается в "All" и наоборот
+        }
+        // Ищем категорию в базе данных, чтобы узнать её перевод
+        const foundSite = sitesData.find(site => site.category[oldLang] === cat);
+        return foundSite ? foundSite.category[currentLang] : ui[currentLang].all;
+    });
+    
     updateUI();
 };
 
