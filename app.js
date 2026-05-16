@@ -183,16 +183,14 @@ function filterData() {
         return;
     }
 
-    // Проверяем, что фильтры находятся в исходном состоянии
+    // Проверяем, что фильтры в дефолтном состоянии (Все, Любая цена, нет закладок/лайков)
     const showAd = currentCategory === ui[currentLang].all && currentPrice === 'all' && !showOnlyBookmarks && !showOnlyLikes;
 
-    filtered.forEach((site, index) => { // Твой существующий цикл
-    
     filtered.forEach((site, index) => {
-        // --- ВСТАВКА РЕКЛАМЫ (на 2-е место) ---
-        if (index === 1) {
+        // --- ВСТАВКА РЕКЛАМЫ (на 2-е место, только если showAd true) ---
+        if (index === 1 && showAd) {
             const adCard = document.createElement('a');
-            adCard.href = "mailto:inianovbob@gmail.com";
+            adCard.href = "mailto:inianovbob@gmail.com?subject=Реклама%20на%20free-webtools"; 
             adCard.className = "card ad-card-grid";
             adCard.innerHTML = `
                 <div class="ad-card-icon">🎯</div>
@@ -250,13 +248,11 @@ function filterData() {
         container.appendChild(card);
     });
 
-    // Если найден всего 1 сайт, ставим рекламу после него
-   // --- ВСТАВКА РЕКЛАМЫ (на 2-е место) ---
-        if (index === 1 && showAd) { // ДОБАВИЛИ ПРОВЕРКУ СЛОВА showAd
-            const adCard = document.createElement('a');
-            // Добавили тему письма в href, чтобы пользователю было удобнее писать
-            adCard.href = "mailto:inianovbob@gmail.com?subject=Реклама%20на%20free-webtools"; 
-            adCard.className = "card ad-card-grid";
+    // Если найден всего 1 сайт и фильтры сброшены, ставим рекламу после него
+    if (filtered.length === 1 && showAd) {
+        const adCard = document.createElement('a');
+        adCard.href = "mailto:inianovbob@gmail.com?subject=Реклама%20на%20free-webtools";
+        adCard.className = "card ad-card-grid";
         adCard.innerHTML = `
             <div class="ad-card-icon">🎯</div>
             <div class="ad-card-title">${currentLang === 'ru' ? 'Здесь могла бы быть ваша реклама' : 'Place your ad here'}</div>
