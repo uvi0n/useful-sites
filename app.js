@@ -108,7 +108,6 @@ window.addEventListener('hashchange', handleHash);
 // --- Инициализация интерфейса ---
 function updateUI() {
     searchInput.placeholder = ui[currentLang].searchPlaceholder;
-    document.getElementById('adText').textContent = ui[currentLang].ad;
     backBtn.textContent = ui[currentLang].back;
     
     if (!window.location.hash.startsWith('#category=')) {
@@ -184,7 +183,21 @@ function filterData() {
         return;
     }
     
-    filtered.forEach(site => {
+    filtered.forEach((site, index) => {
+        // --- ВСТАВКА РЕКЛАМЫ (на 2-е место) ---
+        if (index === 1) {
+            const adCard = document.createElement('a');
+            adCard.href = "mailto:inianovbob@gmail.com";
+            adCard.className = "card ad-card-grid";
+            adCard.innerHTML = `
+                <div class="ad-card-icon">🎯</div>
+                <div class="ad-card-title">${currentLang === 'ru' ? 'Здесь могла бы быть ваша реклама' : 'Place your ad here'}</div>
+                <div class="ad-card-link">inianovbob@gmail.com</div>
+            `;
+            container.appendChild(adCard);
+        }
+        // --------------------------------------
+
         const card = document.createElement('div');
         card.className = 'card';
         const domain = new URL(site.url).hostname;
@@ -231,6 +244,19 @@ function filterData() {
         card.onclick = () => { window.location.hash = `#tool=${site.id}`; };
         container.appendChild(card);
     });
+
+    // Если найден всего 1 сайт, ставим рекламу после него
+    if (filtered.length === 1) {
+        const adCard = document.createElement('a');
+        adCard.href = "mailto:inianovbob@gmail.com";
+        adCard.className = "card ad-card-grid";
+        adCard.innerHTML = `
+            <div class="ad-card-icon">🎯</div>
+            <div class="ad-card-title">${currentLang === 'ru' ? 'Здесь могла бы быть ваша реклама' : 'Place your ad here'}</div>
+            <div class="ad-card-link">inianovbob@gmail.com</div>
+        `;
+        container.appendChild(adCard);
+    }
 }
 
 // --- КЛИКИ ПО КНОПКАМ ЗАКЛАДОК И ЛАЙКОВ ---
