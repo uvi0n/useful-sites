@@ -256,6 +256,31 @@ function filterData() {
         });
     }
 
+    // 1. Обновляем счетчик
+    if (statsCounter) statsCounter.textContent = `${ui[currentLang].found} ${filtered.length}`;
+    
+    // 2. Очищаем контейнер ПЕРЕД отрисовкой
+    container.innerHTML = '';
+    
+    // 3. Управляем кнопкой "Назад"
+    const backToMainContainer = document.getElementById('backToMainContainer');
+    if (backToMainContainer) {
+        const isNotOnMain = showOnlyBookmarks || showOnlyLikes || showOnlyStack || currentStack.length > 0;
+        backToMainContainer.style.display = isNotOnMain ? 'flex' : 'none'; 
+        
+        const backToMainBtn = document.getElementById('backToMainBtn');
+        if (backToMainBtn) {
+            backToMainBtn.textContent = currentLang === 'ru' ? '⬅ Назад к списку' : '⬅ Back to list';
+        }
+    }
+
+    // 4. Если ничего не найдено - пишем текст и останавливаем функцию
+    if (filtered.length === 0) {
+        container.innerHTML = `<h3>${currentLang === 'ru' ? 'Ничего не найдено 😢' : 'Nothing found 😢'}</h3>`;
+        return;
+    }
+
+    // 5. Если есть что рисовать — запускаем цикл
     const showAd = currentCategory === ui[currentLang].all && currentPrice === 'all' && !showOnlyBookmarks && !showOnlyLikes && !showOnlyStack && currentStack.length === 0;
 
     filtered.forEach((site, index) => {
@@ -336,30 +361,8 @@ function filterData() {
 
         card.onclick = () => { window.location.hash = `#tool=${site.id}`; };
         container.appendChild(card);
-    }); // <-- Здесь заканчивается цикл перебора сайтов (forEach)
-
-
-    if (statsCounter) statsCounter.textContent = `${ui[currentLang].found} ${filtered.length}`;
-    container.innerHTML = '';
-    
-    // --- НОВОЕ МЕСТО ДЛЯ КНОПКИ НАЗАД (Теперь она срабатывает ДО остановки функции) ---
-    const backToMainContainer = document.getElementById('backToMainContainer');
-    if (backToMainContainer) {
-        const isNotOnMain = showOnlyBookmarks || showOnlyLikes || showOnlyStack || currentStack.length > 0;
-        backToMainContainer.style.display = isNotOnMain ? 'flex' : 'none'; // Поменяли block на flex для выравнивания
-        
-        const backToMainBtn = document.getElementById('backToMainBtn');
-        if (backToMainBtn) {
-            backToMainBtn.textContent = currentLang === 'ru' ? '⬅ Назад к списку' : '⬅ Back to list';
-        }
-    }
-    // -----------------------------------------------------------------------------------
-
-    if (filtered.length === 0) {
-        container.innerHTML = `<h3>${currentLang === 'ru' ? 'Ничего не найдено 😢' : 'Nothing found 😢'}</h3>`;
-        return;
-    }
-} // <--- ВОТ ЗДЕСЬ ЗАКАНЧИВАЕТСЯ ФУНКЦИЯ filterData()
+    });
+}
 
 // --- КЛИКИ ПО КНОПКАМ ЗАКЛАДОК И ЛАЙКОВ ---
 window.toggleBookmark = function(siteId, btnElement) {
