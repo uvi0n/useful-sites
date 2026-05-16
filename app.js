@@ -34,7 +34,7 @@ let isLikesLoaded = false;
 
 const ui = {
     ru: { 
-        searchPlaceholder: "Поиск (имя, теги)...", all: "Все", found: "Найдено: ", anyPrice: "Любая цена", free: "Частично бесплатно", freemium: "Частично", paid: "Платно", ad: "Нашли ошибку? По вопросам рекламы: ", openBtn: "Открыть", visitBtn: "Перейти на сайт", pros: "Плюсы", cons: "Минусы", back: "⬅ Назад",
+        searchPlaceholder: "Поиск (имя, теги)...", all: "Все", found: "Найдено: ", anyPrice: "Любая цена", free: "Бесплатно", freemium: "Частично бесплатно", paid: "Платно", ad: "Нашли ошибку? По вопросам рекламы: ", openBtn: "Открыть", visitBtn: "Перейти на сайт", pros: "Плюсы", cons: "Минусы", back: "⬅ Назад",
         sortLabel: "Сортировка:", sortDefault: "По умолчанию", sortTop: "🔥 Топ (по лайкам)", sortPopular: "⚡️ Популярные", similarTools: "Похожие инструменты" 
     },
     en: { 
