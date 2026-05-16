@@ -471,8 +471,16 @@ window.closeDetail = function(updateHash = true) {
     container.classList.remove('hidden');
 };
 
-backBtn.onclick = () => closeDetail(true);
-
+backBtn.onclick = () => {
+    // Если есть история переходов, возвращаемся на шаг назад (как в браузере)
+    if (window.history.length > 1) {
+        window.history.back();
+    } else {
+        // Защита: если человек сразу открыл прямую ссылку на карточку в новой вкладке, 
+        // истории нет, поэтому просто закрываем карточку и показываем главную
+        closeDetail(true);
+    }
+};
 themeToggle.onclick = () => {
     const isDark = document.body.getAttribute('data-theme') === 'dark';
     document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
