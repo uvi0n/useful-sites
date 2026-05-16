@@ -265,19 +265,29 @@ function renderFilters() {
 
 // --- Основной рендер ---
 function filterData() {
-    const query = searchInput.value.toLowerCase();
+    const query = searchInput.value.toLowerCase().trim();
+    
+    // Разбиваем запрос на отдельные слова, убирая короткие предлоги и пробелы
+    const queryWords = query.split(/\s+/).filter(word => word.length > 1);
+    // Прогоняем каждое слово через наш стеммер, получая массив чистых основ
+    const queryStems = queryWords.map(word => stemWord(word));
     
     const filtered = sitesData.filter(site => {
         const catText = site.category[currentLang];
-        const descText = site.desc[currentLang].toLowerCase();
-        const nameText = site.name.toLowerCase();
-        const tagsMatch = site.keywords.some(tag => tag.toLowerCase().includes(query));
-        
-        // НОВАЯ ПРОВЕРКА ПО МАССИВУ
-        const matchesCategory = currentCategories.includes(ui[currentLang].all) || currentCategories.includes(catText);
         const matchPrice = currentPrices.includes('all') || currentPrices.includes(site.price);
+        const matchesCategory = currentCategories.includes(ui[currentLang].all) || currentCategories.includes(catText);
         
-        const matchesSearch = nameText.includes(query) || descText.includes(query) || tagsMatch;
+        // Собираем весь текст карточки (имя, описание, теги) в одну длинную строку для поиска
+        const siteContent = (site.name + " " + site.desc[currentLang] + " " + site.keywords.join(" ")).toLowerCase();
+        
+        // Поиск по основам: проверяем, чтобы КАЖДОЕ слово из поиска совпало с текстом карточки
+        let matchesSearch = true;
+        if (queryStems.length > 0) {
+            matchesSearch = queryStems.every(stem => {
+                // Если у слова в карточке есть такая же основа — это мэтч!
+                return siteContent.includes(stem);
+            });
+        }
         const matchesBookmarks = showOnlyBookmarks ? bookmarks.includes(site.id) : true;
         const matchesLikes = showOnlyLikes ? likedSites.includes(site.id) : true;
         
@@ -838,6 +848,32 @@ if (randomBtn && rouletteModal && rouletteTrack) {
             window.location.hash = `#tool=${winner.id}`;
         }, 4100);
     };
+}
+
+// --- ПРОФЕССИОНАЛЬНЫЙ АЛГОРИТМИЧЕСКИЙ СТЕММЕР (ОТ СЕЧЕНИЯ ОКОНЧАНИЙ) ---
+function stemWord(word) {
+    word = word.toLowerCase().trim();
+    if (!word) return "";
+    
+    // Если слово английское — простейший стемминг (убираем s, ed, ing)
+    if (/^[a-z]+$/.test(word)) {
+        return word.replace(/(ing|ed|s)$/, '');
+    }
+
+    // Алгоритм Портера для русского языка (упрощенный, но мощный)
+    const RVRE = /^(.*?[аеиоуыэюя])(.*)$/i;
+    const match = word.match(RVRE);
+    if (!match) return word;
+    
+    let stem = match[1];
+    let rv = match[2];
+    
+    if (!rv) return stem;
+
+    // Срезаем регулярные окончания и суффиксы
+    rv = rv.replace(/(овать|евать|ировать|ывать|ивать|ат|ят|ует|ют|ет|ит|ат|нн|вш|ивш|ывш|ая|ея|яя|ое|ее|ые|ие|ому|ему|ыми|ими|ах|ях|ов|ев|ей|ия|ии|ию|ием|иями|ь|и|ы|а|е|о|у|я)$/i, '');
+    
+    return stem + rv;
 }
 
 // --- ЗАПУСК ---
