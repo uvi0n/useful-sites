@@ -49,6 +49,7 @@
         </div>
         
         <div class="sort-right">
+            <button class="icon-btn small-btn" id="shareBtn" title="Поделиться моим стеком (закладками)">🔗</button>
             <button class="icon-btn small-btn" id="viewToggle" title="Сменить вид (Сетка / Список)">📋</button>
             <button class="icon-btn small-btn" id="randomBtn" title="Случайный сайт">🎲</button>
             <button class="icon-btn small-btn" id="changelogBtn" title="Обновления">📜</button>
@@ -79,6 +80,17 @@
         </div>
     </dialog>
 
+    <div class="search-wrapper">
+                <input type="text" id="searchInput" class="search-box" placeholder="Поиск (имя, теги)..." autocomplete="off">
+                <div class="quick-tags">
+                    <span class="quick-tag" data-tag="ai">#Нейросети</span>
+                    <span class="quick-tag" data-tag="dota2">#Dota2</span>
+                    <span class="quick-tag" data-tag="cs2">#CS2</span>
+                    <span class="quick-tag" data-tag="математика">#Учеба</span>
+                    <span class="quick-tag" data-tag="nocode">#NoCode</span>
+                </div>
+            </div>
+
     <dialog id="changelogModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" id="closeChangelog">×</span>
@@ -89,5 +101,9 @@
 
     <script src="data.js"></script>
     <script src="app.js"></script>
+
+    <footer class="site-footer">
+        <p>Сделано с ❤️ | <a href="https://yoomoney.ru/" target="_blank" class="donate-btn">☕ Поддержать автора</a></p>
+    </footer>
 </body>
 </html>
