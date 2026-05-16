@@ -335,8 +335,8 @@ function filterData() {
         return;
     }
 
-    // НОВАЯ ПРОВЕРКА РЕКЛАМЫ (только если выбрано "Все" и "Любая цена")
-    const showAd = currentCategories.includes(ui[currentLang].all) && currentPrices.includes('all') && !showOnlyBookmarks && !showOnlyLikes && !showOnlyStack && currentStack.length === 0;
+    // НОВАЯ ПРОВЕРКА РЕКЛАМЫ (только если выбрано "Все", "Любая цена" и строка поиска ПУСТАЯ)
+    const showAd = currentCategories.includes(ui[currentLang].all) && currentPrices.includes('all') && !showOnlyBookmarks && !showOnlyLikes && !showOnlyStack && currentStack.length === 0 && !query;
 
     filtered.forEach((site, index) => {
         if (index === 1 && showAd) {
@@ -870,8 +870,9 @@ function stemWord(word) {
     
     if (!rv) return stem;
 
-    // Срезаем регулярные окончания и суффиксы
-    rv = rv.replace(/(овать|евать|ировать|ывать|ивать|ат|ят|ует|ют|ет|ит|ат|нн|вш|ивш|ывш|ая|ея|яя|ое|ее|ые|ие|ому|ему|ыми|ими|ах|ях|ов|ев|ей|ия|ии|ию|ием|иями|ь|и|ы|а|е|о|у|я)$/i, '');
+    // Сначала срезаем глагольные инфинитивы вроде -ить, -ать, -еть, а затем всё остальное + мягкий знак
+    rv = rv.replace(/(ировать|ывать|ивать|овать|евать|ить|еть|ат|ят|ует|ют|ет|ит|ат|нн|вш|ивш|ывш|ая|ея|яя|ое|ее|ые|ие|ому|ему|ыми|ими|ах|ях|ов|ев|ей|ия|ии|ию|ием|иями)$/i, '');
+    rv = rv.replace(/(ь|и|ы|а|е|о|у|я)$/i, ''); // Отдельно убираем одиночные гласные и мягкий знак на конце
     
     return stem + rv;
 }
