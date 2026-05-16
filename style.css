@@ -473,3 +473,23 @@ body {
     font-size: 16px;
     padding: 0;
 }
+
+/* --- КНОПКА-БУЛАВКА (СТИКЕР) --- */
+.pin-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 10;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    filter: drop-shadow(0 3px 4px rgba(0,0,0,0.2)); /* Тень для объема */
+    padding: 0;
+    line-height: 1;
+}
+
+.pin-btn:hover {
+    transform: scale(1.25) rotate(15deg); /* Игривое покачивание при наведении */
+}
