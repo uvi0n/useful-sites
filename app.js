@@ -53,6 +53,7 @@ let showOnlyBookmarks = false;
 let showOnlyLikes = false; 
 let currentSort = 'default';
 let currentView = localStorage.getItem('view') || 'grid';
+let currentStack = [];
 
 // Инициализация LocalStorage для Закладок и Лайков
 let bookmarks = JSON.parse(localStorage.getItem('myBookmarks')) || [];
@@ -113,6 +114,8 @@ function updateLikesOnLiveCards() {
 // --- Роутинг (Hash-навигация) ---
 function handleHash() {
     const hash = decodeURIComponent(window.location.hash.substring(1));
+    currentStack = []; // Сбрасываем стек
+    
     if (hash.startsWith('tool=')) {
         const siteId = hash.replace('tool=', '');
         openDetail(siteId, false);
@@ -120,6 +123,13 @@ function handleHash() {
         currentCategory = hash.replace('category=', '');
         closeDetail(false);
         updateUI();
+    } else if (hash.startsWith('stack=')) {
+        // Читаем чужие закладки из ссылки
+        currentStack = hash.replace('stack=', '').split(',');
+        currentCategory = ui[currentLang].all; 
+        closeDetail(false);
+        updateUI();
+        if (searchInput) searchInput.value = "Сборка пользователя 📦";
     } else {
         closeDetail(false);
         updateUI();
@@ -216,7 +226,8 @@ function filterData() {
         const matchesBookmarks = showOnlyBookmarks ? bookmarks.includes(site.id) : true;
         const matchesLikes = showOnlyLikes ? likedSites.includes(site.id) : true;
         
-        return matchesCategory && matchesSearch && matchPrice && matchesBookmarks && matchesLikes; 
+        const matchesStack = currentStack.length > 0 ? currentStack.includes(site.id) : true;
+        return matchesCategory && matchesSearch && matchPrice && matchesBookmarks && matchesLikes && matchesStack; 
     });
 
     // --- ЛОГИКА СОРТИРОВКИ ---
@@ -608,6 +619,53 @@ window.togglePin = function(siteId, btnElement) {
     }
     localStorage.setItem('myPins', JSON.stringify(pinnedSites)); // Сохраняем в браузере
     filterData(); // Мгновенно перерисовываем карточки, чтобы сайт улетел наверх
+};
+
+// --- БЫСТРЫЕ ТЕГИ (Умный поиск по синонимам) ---
+document.querySelectorAll('.quick-tag').forEach(tag => {
+    tag.onclick = () => {
+        searchInput.value = tag.getAttribute('data-tag');
+        filterData(); // Мгновенно фильтруем
+    };
+});
+
+// --- ГЕНЕРАЦИЯ ССЫЛКИ НА "МОЙ СТЕК" ---
+const shareBtn = document.getElementById('shareBtn');
+if (shareBtn) {
+    shareBtn.onclick = () => {
+        if (bookmarks.length === 0) {
+            alert(currentLang === 'ru' ? 'Сначала добавьте сайты в закладки ⭐' : 'Add sites to bookmarks first ⭐');
+            return;
+        }
+        // Формируем ссылку со всеми ID из закладок
+        const stackUrl = `${window.location.origin}${window.location.pathname}#stack=${bookmarks.join(',')}`;
+        navigator.clipboard.writeText(stackUrl).then(() => {
+            const originalText = shareBtn.textContent;
+            shareBtn.textContent = '✅'; // Показываем галочку
+            setTimeout(() => shareBtn.textContent = originalText, 2000);
+        });
+    };
+}
+
+// --- АНИМИРОВАННАЯ КНОПКА РАНДОМА ---
+randomBtn.onclick = () => {
+    const hotSites = sitesData.filter(s => s.isHot); // Ищем только среди HOT-инструментов
+    const pool = hotSites.length > 0 ? hotSites : sitesData;
+    
+    let iterations = 0;
+    // Крутим рулетку названий в строке поиска
+    const interval = setInterval(() => {
+        const tempSite = pool[Math.floor(Math.random() * pool.length)];
+        searchInput.value = "🎲 " + tempSite.name + "...";
+        iterations++;
+        
+        if (iterations > 10) {
+            clearInterval(interval);
+            const finalSite = pool[Math.floor(Math.random() * pool.length)];
+            searchInput.value = ""; // Очищаем
+            window.location.hash = `#tool=${finalSite.id}`; // Открываем победителя
+        }
+    }, 60); // Скорость мелькания
 };
 
 // --- ЗАПУСК ---
