@@ -298,7 +298,7 @@ function filterData() {
                 ${isPinned ? '📌' : '📍'}
             </button>
             ` : ''}
-
+            
             <div class="card-header">
                 ${badgeHtml}
                 <div>
