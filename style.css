@@ -607,3 +607,8 @@ main.container, section.container {
     transform: scale(1.1);
     box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3);
 }
+
+/* --- ФИКС РАСТЯГИВАНИЯ КАРТОЧЕК --- */
+#sites-container {
+    align-content: start; /* Запрещаем карточкам растягиваться по вертикали на пустом экране */
+}
