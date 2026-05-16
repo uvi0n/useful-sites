@@ -255,14 +255,6 @@ function filterData() {
             return 0; 
         });
     }
-    
-    if (statsCounter) statsCounter.textContent = `${ui[currentLang].found} ${filtered.length}`;
-    container.innerHTML = '';
-    
-    if (filtered.length === 0) {
-        container.innerHTML = `<h3>${currentLang === 'ru' ? 'Ничего не найдено 😢' : 'Nothing found 😢'}</h3>`;
-        return;
-    }
 
     const showAd = currentCategory === ui[currentLang].all && currentPrice === 'all' && !showOnlyBookmarks && !showOnlyLikes && !showOnlyStack && currentStack.length === 0;
 
@@ -346,19 +338,26 @@ function filterData() {
         container.appendChild(card);
     }); // <-- Здесь заканчивается цикл перебора сайтов (forEach)
 
-    // Управление видимостью новой кнопки "Назад" над сеткой
+
+    if (statsCounter) statsCounter.textContent = `${ui[currentLang].found} ${filtered.length}`;
+    container.innerHTML = '';
+    
+    // --- НОВОЕ МЕСТО ДЛЯ КНОПКИ НАЗАД (Теперь она срабатывает ДО остановки функции) ---
     const backToMainContainer = document.getElementById('backToMainContainer');
     if (backToMainContainer) {
-        // Проверяем, находимся ли мы где-то кроме главной страницы
-        const isNotOnMain = showOnlyBookmarks || showOnlyLikes || showOnlyStack || currentStack.length > 0 || currentCategory !== ui[currentLang].all;
+        const isNotOnMain = showOnlyBookmarks || showOnlyLikes || showOnlyStack || currentStack.length > 0;
+        backToMainContainer.style.display = isNotOnMain ? 'flex' : 'none'; // Поменяли block на flex для выравнивания
         
-        backToMainContainer.style.display = isNotOnMain ? 'block' : 'none';
-        
-        // Подстраиваем текст под язык
         const backToMainBtn = document.getElementById('backToMainBtn');
         if (backToMainBtn) {
             backToMainBtn.textContent = currentLang === 'ru' ? '⬅ Назад к списку' : '⬅ Back to list';
         }
+    }
+    // -----------------------------------------------------------------------------------
+
+    if (filtered.length === 0) {
+        container.innerHTML = `<h3>${currentLang === 'ru' ? 'Ничего не найдено 😢' : 'Nothing found 😢'}</h3>`;
+        return;
     }
 } // <--- ВОТ ЗДЕСЬ ЗАКАНЧИВАЕТСЯ ФУНКЦИЯ filterData()
 
