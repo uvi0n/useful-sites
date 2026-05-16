@@ -450,3 +450,33 @@ body {
         flex-direction: row; border-left: none; padding-left: 0; border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 15px;
     }
 }
+
+/* --- ЛЕЙАУТ ПАНЕЛИ СОРТИРОВКИ --- */
+.sort-container {
+    display: flex;
+    justify-content: space-between; /* Расталкиваем левую и правую части */
+    align-items: center;
+    flex-wrap: wrap; /* Чтобы на телефонах кнопки не уезжали за экран */
+    gap: 15px;
+}
+
+.sort-left, .sort-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Делаем вспомогательные кнопки чуть меньше, чтобы они не спорили с главными */
+.sort-right .small-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+    padding: 0;
+}
+
+/* На мобильных устройствах центрируем всё */
+@media (max-width: 600px) {
+    .sort-container {
+        justify-content: center;
+    }
+}
