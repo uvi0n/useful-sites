@@ -83,8 +83,8 @@ async function loadLikes() {
     }
 }
 
-// СРАЗУ ПОСЛЕ LOADLIKES ИДЕТ СЛЕДУЮЩАЯ ФУНКЦИЯ:
 function updateLikesOnLiveCards() {
+    // 1. Обновляем лайки
     const likeButtons = container.querySelectorAll('.like-btn');
     likeButtons.forEach(btn => {
         const onclickText = btn.getAttribute('onclick');
@@ -96,6 +96,15 @@ function updateLikesOnLiveCards() {
             if (span) {
                 span.textContent = globalLikesMap[siteId] !== undefined ? globalLikesMap[siteId] : 0;
             }
+        }
+    }); 
+
+    // 2. Обновляем просмотры (глазики) после загрузки базы
+    const clickSpans = container.querySelectorAll('.clicks-count');
+    clickSpans.forEach(span => {
+        const siteId = span.getAttribute('data-site');
+        if (siteId) {
+            span.textContent = globalClicksMap[siteId] !== undefined ? globalClicksMap[siteId] : 0;
         }
     });
 }
@@ -268,6 +277,7 @@ function filterData() {
         const isLiked = likedSites.includes(site.id);
         
         const actualLikes = isLikesLoaded ? (globalLikesMap[site.id] !== undefined ? globalLikesMap[site.id] : 0) : '...';
+        const actualClicks = isLikesLoaded ? (globalClicksMap[site.id] !== undefined ? globalClicksMap[site.id] : 0) : '...';
 
         card.innerHTML = `
             <div class="card-header">
@@ -287,6 +297,10 @@ function filterData() {
                 <button class="action-btn like-btn ${isLiked ? 'active' : ''}" onclick="toggleLike('${site.id}', this)">
                     ${isLiked ? '❤️' : '🤍'} <span>${actualLikes}</span>
                 </button>
+                
+                <div class="action-btn view-btn" style="cursor: default;" title="Просмотры">
+                    👁️ <span class="clicks-count" data-site="${site.id}">${actualClicks}</span>
+                </div>
                 <button class="action-btn bookmark-btn ${isBookmarked ? 'active' : ''}" onclick="toggleBookmark('${site.id}', this)">
                     ${isBookmarked ? '⭐' : '☆'}
                 </button>
@@ -534,6 +548,10 @@ window.trackClick = function(siteId) {
     
     currentClicks += 1;
     globalClicksMap[siteId] = currentClicks; // Обновляем локально мгновенно
+
+    // НОВОЕ: Визуально прибавляем +1 на карточке без перезагрузки
+    const clickSpans = document.querySelectorAll(`.clicks-count[data-site="${siteId}"]`);
+    clickSpans.forEach(span => span.textContent = currentClicks);
 
     // Отправляем в базу
     fetch(`${SUPABASE_URL}/rest/v1/likes`, {
