@@ -57,15 +57,17 @@ const ui = {
 
 let currentLang = localStorage.getItem('lang') || 'ru';
 let currentTheme = localStorage.getItem('theme') || 'dark';
-let currentCategory = 'Все';
-let currentPrice = 'all'; 
+
+// --- ИЗМЕНЕНИЯ ДЛЯ МУЛЬТИВЫБОРА ---
+let currentCategories = []; // Теперь это массив
+let currentPrices = ['all']; // И это тоже массив
 
 // Флаги фильтров, сортировки и стеков
 let showOnlyBookmarks = false;
 let showOnlyLikes = false; 
 let currentSort = 'default';
 let currentView = localStorage.getItem('view') || 'grid';
-let currentStack = []; // Хранилище для сайтов из переданной ссылки #stack=...
+let currentStack = []; 
 
 // Инициализация LocalStorage для Закладок, Лайков, Пинов и Стеков
 let bookmarks = JSON.parse(localStorage.getItem('myBookmarks')) || [];
@@ -133,12 +135,12 @@ function handleHash() {
         openDetail(siteId, false);
     } else if (hash.startsWith('category=')) {
         currentStack = []; 
-        currentCategory = hash.replace('category=', '');
+        currentCategories = [hash.replace('category=', '')]; // Ставим одну категорию из хэша
         closeDetail(false);
         updateUI();
     } else if (hash.startsWith('stack=')) {
         currentStack = hash.replace('stack=', '').split(',');
-        currentCategory = ui[currentLang].all; 
+        currentCategories = [ui[currentLang].all]; 
         closeDetail(false);
         updateUI();
         if (searchInput) searchInput.value = currentLang === 'ru' ? "Сборка пользователя 📦" : "Shared Stack 📦";
@@ -170,8 +172,9 @@ function updateUI() {
     const similarTitle = document.getElementById('similar-title');
     if (similarTitle) similarTitle.textContent = ui[currentLang].similarTools;
     
+    // Инициализация стартовой категории
     if (!window.location.hash.startsWith('#category=')) {
-        currentCategory = ui[currentLang].all; 
+        if (currentCategories.length === 0) currentCategories = [ui[currentLang].all]; 
     }
     
     renderFilters();
@@ -187,29 +190,74 @@ function shuffleArray(array) {
     return array;
 }
 
+// --- НОВАЯ ЛОГИКА КНОПОК ЦЕН ---
 function renderPriceFilters() {
     const prices = [{ id: 'all', label: ui[currentLang].anyPrice }, { id: 'free', label: ui[currentLang].free }, { id: 'freemium', label: ui[currentLang].freemium }, { id: 'paid', label: ui[currentLang].paid }];
     priceFiltersContainer.innerHTML = '';
+    
     prices.forEach(p => {
         const btn = document.createElement('button');
-        btn.className = `filter-btn ${currentPrice === p.id ? 'active' : ''}`;
+        btn.className = `filter-btn ${currentPrices.includes(p.id) ? 'active' : ''}`;
         btn.textContent = p.label;
-        btn.onclick = () => { currentPrice = p.id; filterData(); renderPriceFilters(); };
+        
+        btn.onclick = () => { 
+            if (p.id === 'all') {
+                currentPrices = ['all']; // Если нажали "Любая цена", сбрасываем всё
+            } else {
+                currentPrices = currentPrices.filter(price => price !== 'all'); // Убираем "Любая цена"
+                
+                if (currentPrices.includes(p.id)) {
+                    currentPrices = currentPrices.filter(price => price !== p.id); // Убираем, если уже была нажата
+                } else {
+                    currentPrices.push(p.id); // Добавляем новую цену
+                }
+                
+                // Если отщелкали всё, возвращаем "Любая цена"
+                if (currentPrices.length === 0) currentPrices = ['all'];
+            }
+            filterData(); 
+            renderPriceFilters(); 
+        };
         priceFiltersContainer.appendChild(btn);
     });
 }
 
+// --- НОВАЯ ЛОГИКА КНОПОК КАТЕГОРИЙ ---
 function renderFilters() {
     const allText = ui[currentLang].all;
     const categories = [allText, ...new Set(sitesData.map(site => site.category[currentLang]))];
     filtersContainer.innerHTML = '';
+    
     categories.forEach(category => {
         const btn = document.createElement('button');
-        btn.className = `filter-btn ${category === currentCategory ? 'active' : ''}`;
+        btn.className = `filter-btn ${currentCategories.includes(category) ? 'active' : ''}`;
         btn.textContent = category;
+        
         btn.onclick = () => {
-            currentCategory = category;
-            window.location.hash = category === allText ? '' : `#category=${encodeURIComponent(category)}`;
+            if (category === allText) {
+                currentCategories = [allText]; // Если нажали "Все", очищаем остальные
+            } else {
+                currentCategories = currentCategories.filter(c => c !== allText); // Убираем "Все"
+                
+                if (currentCategories.includes(category)) {
+                    currentCategories = currentCategories.filter(c => c !== category); // Убираем категорию
+                } else {
+                    currentCategories.push(category); // Добавляем категорию
+                }
+                
+                // Если отщелкали всё, возвращаем "Все"
+                if (currentCategories.length === 0) currentCategories = [allText];
+            }
+            
+            // Если выбрана только 1 категория, пишем её в ссылку (для красоты), иначе убираем
+            if (currentCategories.length === 1 && currentCategories[0] !== allText) {
+                window.location.hash = `#category=${encodeURIComponent(currentCategories[0])}`;
+            } else {
+                window.location.hash = '';
+            }
+
+            filterData();
+            renderFilters();
         };
         filtersContainer.appendChild(btn);
     });
@@ -225,10 +273,11 @@ function filterData() {
         const nameText = site.name.toLowerCase();
         const tagsMatch = site.keywords.some(tag => tag.toLowerCase().includes(query));
         
-        const matchesCategory = currentCategory === ui[currentLang].all || catText === currentCategory;
-        const matchesSearch = nameText.includes(query) || descText.includes(query) || tagsMatch;
-        const matchPrice = currentPrice === 'all' || site.price === currentPrice;
+        // НОВАЯ ПРОВЕРКА ПО МАССИВУ
+        const matchesCategory = currentCategories.includes(ui[currentLang].all) || currentCategories.includes(catText);
+        const matchPrice = currentPrices.includes('all') || currentPrices.includes(site.price);
         
+        const matchesSearch = nameText.includes(query) || descText.includes(query) || tagsMatch;
         const matchesBookmarks = showOnlyBookmarks ? bookmarks.includes(site.id) : true;
         const matchesLikes = showOnlyLikes ? likedSites.includes(site.id) : true;
         
@@ -256,13 +305,10 @@ function filterData() {
         });
     }
 
-    // 1. Обновляем счетчик
     if (statsCounter) statsCounter.textContent = `${ui[currentLang].found} ${filtered.length}`;
-    
-    // 2. Очищаем контейнер ПЕРЕД отрисовкой
     container.innerHTML = '';
     
-    // 3. Управляем кнопкой "Назад"
+    // Управление кнопкой "Назад к списку"
     const backToMainContainer = document.getElementById('backToMainContainer');
     if (backToMainContainer) {
         const isNotOnMain = showOnlyBookmarks || showOnlyLikes || showOnlyStack || currentStack.length > 0;
@@ -274,14 +320,13 @@ function filterData() {
         }
     }
 
-    // 4. Если ничего не найдено - пишем текст и останавливаем функцию
     if (filtered.length === 0) {
         container.innerHTML = `<h3>${currentLang === 'ru' ? 'Ничего не найдено 😢' : 'Nothing found 😢'}</h3>`;
         return;
     }
 
-    // 5. Если есть что рисовать — запускаем цикл
-    const showAd = currentCategory === ui[currentLang].all && currentPrice === 'all' && !showOnlyBookmarks && !showOnlyLikes && !showOnlyStack && currentStack.length === 0;
+    // НОВАЯ ПРОВЕРКА РЕКЛАМЫ (только если выбрано "Все" и "Любая цена")
+    const showAd = currentCategories.includes(ui[currentLang].all) && currentPrices.includes('all') && !showOnlyBookmarks && !showOnlyLikes && !showOnlyStack && currentStack.length === 0;
 
     filtered.forEach((site, index) => {
         if (index === 1 && showAd) {
@@ -433,7 +478,8 @@ bookmarksBtn.onclick = () => {
         if (stackManagerPanel) stackManagerPanel.classList.add('hidden');
     }
     bookmarksBtn.classList.toggle('active', showOnlyBookmarks);
-    currentCategory = ui[currentLang].all;
+    currentCategories = [ui[currentLang].all]; // Сброс при переходе
+    currentPrices = ['all']; // Сброс при переходе
     window.location.hash = '';
     updateUI();
 };
@@ -447,10 +493,33 @@ likesBtn.onclick = () => {
         if (stackManagerPanel) stackManagerPanel.classList.add('hidden');
     }
     likesBtn.classList.toggle('active', showOnlyLikes);
-    currentCategory = ui[currentLang].all;
+    currentCategories = [ui[currentLang].all]; // Сброс при переходе
+    currentPrices = ['all']; // Сброс при переходе
     window.location.hash = '';
     updateUI();
 };
+
+// --- КНОПКА "НАЗАД К СПИСКУ" ---
+const backToMainBtn = document.getElementById('backToMainBtn');
+if (backToMainBtn) {
+    backToMainBtn.onclick = () => {
+        showOnlyBookmarks = false;
+        showOnlyLikes = false;
+        showOnlyStack = false;
+        currentStack = [];
+        currentCategories = [ui[currentLang].all]; 
+        currentPrices = ['all']; 
+        if (searchInput) searchInput.value = '';
+        
+        if (likesBtn) likesBtn.classList.remove('active');
+        if (bookmarksBtn) bookmarksBtn.classList.remove('active');
+        if (stackBtn) stackBtn.classList.remove('active');
+        if (stackManagerPanel) stackManagerPanel.classList.add('hidden');
+        
+        window.location.hash = '';
+        updateUI();
+    };
+}
 
 // --- Детальный вид ---
 window.openDetail = function(siteId, updateHash = true) { 
@@ -496,6 +565,10 @@ window.openDetail = function(siteId, updateHash = true) {
     container.classList.add('hidden');
     if(sortContainer) sortContainer.classList.add('hidden');
     if(stackManagerPanel) stackManagerPanel.classList.add('hidden');
+    
+    const backToMainContainer = document.getElementById('backToMainContainer');
+    if (backToMainContainer) backToMainContainer.style.display = 'none';
+
     detailView.classList.remove('hidden');
     window.scrollTo(0, 0);
 };
@@ -506,6 +579,7 @@ window.closeDetail = function(updateHash = true) {
     if(sortContainer) sortContainer.classList.remove('hidden');
     if(showOnlyStack && stackManagerPanel) stackManagerPanel.classList.remove('hidden');
     container.classList.remove('hidden');
+    filterData(); // Обновляем состояние кнопки "Назад"
 };
 
 backBtn.onclick = () => {
@@ -551,12 +625,11 @@ const sortBtns = document.querySelectorAll('.sort-btn');
 if (sortContainer) {
     sortBtns.forEach(btn => {
         btn.onclick = () => {
-            if(btn.id === 'stackSelect') return; // Пропускаем селект стека
+            if(btn.id === 'stackSelect') return; 
             sortBtns.forEach(b => { if(b.id !== 'stackSelect') b.classList.remove('active') });
             btn.classList.add('active');
             currentSort = btn.getAttribute('data-sort');
             
-            // Если был открыт чужой стек по ссылке — сбрасываем его при сортировке
             if (window.location.hash.includes('stack=')) {
                 currentStack = [];
                 window.location.hash = '';
@@ -764,31 +837,6 @@ if (randomBtn && rouletteModal && rouletteTrack) {
             const winner = targetItems[winningIndex];
             window.location.hash = `#tool=${winner.id}`;
         }, 4100);
-    };
-}
-
-// --- КНОПКА "НАЗАД" НАД БЛОКАМИ САЙТОВ ---
-const backToMainBtn = document.getElementById('backToMainBtn');
-
-if (backToMainBtn) {
-    backToMainBtn.onclick = () => {
-        // Сбрасываем все разделы и возвращаемся на чистую главную
-        showOnlyBookmarks = false;
-        showOnlyLikes = false;
-        showOnlyStack = false;
-        currentStack = [];
-        currentCategory = ui[currentLang].all;
-        if (searchInput) searchInput.value = '';
-        
-        // Снимаем подсветку с иконок в шапке
-        if (likesBtn) likesBtn.classList.remove('active');
-        if (bookmarksBtn) bookmarksBtn.classList.remove('active');
-        if (stackBtn) stackBtn.classList.remove('active');
-        if (stackManagerPanel) stackManagerPanel.classList.add('hidden');
-        
-        // Очищаем адресную строку
-        window.location.hash = '';
-        updateUI();
     };
 }
 
