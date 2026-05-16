@@ -344,8 +344,23 @@ function filterData() {
 
         card.onclick = () => { window.location.hash = `#tool=${site.id}`; };
         container.appendChild(card);
-    });
-}
+    }); // <-- Здесь заканчивается цикл перебора сайтов (forEach)
+
+    // Управление видимостью новой кнопки "Назад" над сеткой
+    const backToMainContainer = document.getElementById('backToMainContainer');
+    if (backToMainContainer) {
+        // Проверяем, находимся ли мы где-то кроме главной страницы
+        const isNotOnMain = showOnlyBookmarks || showOnlyLikes || showOnlyStack || currentStack.length > 0 || currentCategory !== ui[currentLang].all;
+        
+        backToMainContainer.style.display = isNotOnMain ? 'block' : 'none';
+        
+        // Подстраиваем текст под язык
+        const backToMainBtn = document.getElementById('backToMainBtn');
+        if (backToMainBtn) {
+            backToMainBtn.textContent = currentLang === 'ru' ? '⬅ Назад к списку' : '⬅ Back to list';
+        }
+    }
+} // <--- ВОТ ЗДЕСЬ ЗАКАНЧИВАЕТСЯ ФУНКЦИЯ filterData()
 
 // --- КЛИКИ ПО КНОПКАМ ЗАКЛАДОК И ЛАЙКОВ ---
 window.toggleBookmark = function(siteId, btnElement) {
@@ -755,6 +770,31 @@ if (randomBtn && rouletteModal && rouletteTrack) {
             const winner = targetItems[winningIndex];
             window.location.hash = `#tool=${winner.id}`;
         }, 4100);
+    };
+}
+
+// --- КНОПКА "НАЗАД" НАД БЛОКАМИ САЙТОВ ---
+const backToMainBtn = document.getElementById('backToMainBtn');
+
+if (backToMainBtn) {
+    backToMainBtn.onclick = () => {
+        // Сбрасываем все разделы и возвращаемся на чистую главную
+        showOnlyBookmarks = false;
+        showOnlyLikes = false;
+        showOnlyStack = false;
+        currentStack = [];
+        currentCategory = ui[currentLang].all;
+        if (searchInput) searchInput.value = '';
+        
+        // Снимаем подсветку с иконок в шапке
+        if (likesBtn) likesBtn.classList.remove('active');
+        if (bookmarksBtn) bookmarksBtn.classList.remove('active');
+        if (stackBtn) stackBtn.classList.remove('active');
+        if (stackManagerPanel) stackManagerPanel.classList.add('hidden');
+        
+        // Очищаем адресную строку
+        window.location.hash = '';
+        updateUI();
     };
 }
 
