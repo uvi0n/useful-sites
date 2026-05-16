@@ -119,6 +119,15 @@ function updateUI() {
     filterData();
 }
 
+// Функция для случайного перемешивания массива (Алгоритм Фишера-Йетса)
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
 // --- Фильтры ---
 function renderPriceFilters() {
     const prices = [{ id: 'all', label: ui[currentLang].anyPrice }, { id: 'free', label: ui[currentLang].free }, { id: 'freemium', label: ui[currentLang].freemium }, { id: 'paid', label: ui[currentLang].paid }];
@@ -173,6 +182,9 @@ function filterData() {
         filtered.sort((a, b) => (globalLikesMap[b.id] || 0) - (globalLikesMap[a.id] || 0));
     } else if (currentSort === 'new') {
         filtered.sort((a, b) => (b.isNew === a.isNew) ? 0 : b.isNew ? 1 : -1);
+    } else if (currentSort === 'default') {
+        // Если выбран режим "По умолчанию" — перемешиваем сайты случайным образом
+        shuffleArray(filtered);
     }
     
     if (statsCounter) statsCounter.textContent = `${ui[currentLang].found} ${filtered.length}`;
