@@ -57,6 +57,7 @@ let currentView = localStorage.getItem('view') || 'grid';
 // Инициализация LocalStorage для Закладок и Лайков
 let bookmarks = JSON.parse(localStorage.getItem('myBookmarks')) || [];
 let likedSites = JSON.parse(localStorage.getItem('myLikes')) || [];
+let pinnedSites = JSON.parse(localStorage.getItem('myPins')) || []; // <-- НОВОЕ: Хранилище закрепов
 
 if (currentTheme === 'dark') document.body.setAttribute('data-theme', 'dark');
 langToggle.textContent = currentLang === 'ru' ? '🇷🇺 RU' : '🇬🇧 EN';
@@ -228,6 +229,17 @@ function filterData() {
         // Если выбран режим "По умолчанию" — перемешиваем сайты случайным образом
         shuffleArray(filtered);
     }
+
+    // НОВОЕ: Если открыты Закладки или Лайки — поднимаем закрепленные сайты наверх
+    if (showOnlyBookmarks || showOnlyLikes) {
+        filtered.sort((a, b) => {
+            const aPinned = pinnedSites.includes(a.id);
+            const bPinned = pinnedSites.includes(b.id);
+            if (aPinned && !bPinned) return -1; // a идет наверх
+            if (!aPinned && bPinned) return 1;  // b идет наверх
+            return 0; // Остальные остаются на своих местах
+        });
+    }
     
     if (statsCounter) statsCounter.textContent = `${ui[currentLang].found} ${filtered.length}`;
     container.innerHTML = '';
@@ -275,6 +287,7 @@ function filterData() {
 
         const isBookmarked = bookmarks.includes(site.id);
         const isLiked = likedSites.includes(site.id);
+        const isPinned = pinnedSites.includes(site.id); // <-- НОВОЕ
         
         const actualLikes = isLikesLoaded ? (globalLikesMap[site.id] !== undefined ? globalLikesMap[site.id] : 0) : '...';
         const actualClicks = isLikesLoaded ? (globalClicksMap[site.id] !== undefined ? globalClicksMap[site.id] : 0) : '...';
@@ -301,6 +314,12 @@ function filterData() {
                 <button class="action-btn bookmark-btn ${isBookmarked ? 'active' : ''}" onclick="toggleBookmark('${site.id}', this)">
                     ${isBookmarked ? '⭐' : '☆'}
                 </button>
+
+                ${(showOnlyBookmarks || showOnlyLikes) ? `
+                <button class="action-btn" onclick="togglePin('${site.id}', this)" title="Закрепить наверху">
+                    ${isPinned ? '📌' : '📍'}
+                </button>
+                ` : ''}
 
                 <div class="action-btn view-btn" style="cursor: default;" title="Переходы на сайт">
                     🔗 <span class="clicks-count" data-site="${site.id}">${actualClicks}</span>
@@ -578,6 +597,17 @@ window.trackClick = function(siteId) {
             clicks_count: currentClicks 
         })
     }).catch(err => console.error("Ошибка сети при учете клика:", err));
+};
+
+// --- ЗАКРЕПЛЕНИЕ САЙТОВ НАВЕРХУ (ПИНЫ) ---
+window.togglePin = function(siteId, btnElement) {
+    if (pinnedSites.includes(siteId)) {
+        pinnedSites = pinnedSites.filter(id => id !== siteId); // Открепляем
+    } else {
+        pinnedSites.push(siteId); // Закрепляем
+    }
+    localStorage.setItem('myPins', JSON.stringify(pinnedSites)); // Сохраняем в браузере
+    filterData(); // Мгновенно перерисовываем карточки, чтобы сайт улетел наверх
 };
 
 // --- ЗАПУСК ---
