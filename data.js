@@ -77,7 +77,7 @@ const sitesData = [
         id: "x-grok",
         name: "Grok AI",
         url: "https://x.com/i/grok",
-        price: "paid",
+        price: "freemium",
         category: { ru: "Нейросети", en: "AI" },
         desc: { ru: "Нейросеть от Илона Маска с доступом к инсайдам X.", en: "AI assistant by Elon Musk with real-time X data." },
         fullDesc: { ru: "Умный ассистент, интегрированный в соцсеть X (Twitter). Имеет доступ к самым свежим новостям и трендам интернета в режиме реального времени. Олицетворяет дерзкий стиль общения.", en: "AI assistant integrated into X. Has real-time access to global news, trends, and posts with a witty tone." },
@@ -170,7 +170,7 @@ const sitesData = [
         cons: { ru: ["Иногда вокал звучит как робот"], en: ["Vocals can sometimes sound robotic"] },
         keywords: ["музыка", "песни", "звук", "вокал"],
         isHot: false,
-        isNew: true
+        isNew: false
     },
     {
         id: "perplexity",
@@ -184,7 +184,7 @@ const sitesData = [
         cons: { ru: ["Иногда не находит глубокую информацию"], en: ["Sometimes misses deep info"] },
         keywords: ["поиск", "google", "ресерч", "факты"],
         isHot: false,
-        isNew: true
+        isNew: false
     },
 
     // --- ДИЗАЙН (DESIGN) ---
@@ -199,7 +199,7 @@ const sitesData = [
         pros: { ru: ["Бесплатно для старта", "Совместная работа"], en: ["Free to start", "Collaboration features"] },
         cons: { ru: ["Требует времени на изучение"], en: ["Takes time to learn"] },
         keywords: ["дизайн", "ui", "ux", "интерфейс"],
-        isHot: true,
+        isHot: false,
         isNew: false
     },
     {
@@ -428,7 +428,7 @@ const sitesData = [
         cons: { ru: ["Экспорт кода только в платной версии"], en: ["Code export is paid"] },
         keywords: ["flutter", "dart", "мобилка", "nocode"],
         isHot: false,
-        isNew: true
+        isNew: false
     },
     {
         id: "codesandbox",
@@ -601,7 +601,7 @@ const sitesData = [
         pros: { ru: ["Простота", "Хороший каталог объектов"], en: ["Simplicity", "Good object catalog"] },
         cons: { ru: ["HD-рендеры платные"], en: ["HD renders are paid"] },
         keywords: ["дом", "интерьер", "планировка", "архитектура"],
-        isHot: true,
+        isHot: false,
         isNew: false
     },
     {
@@ -631,7 +631,7 @@ const sitesData = [
         pros: { ru: ["Мгновенные обновления", "Сетка турниров онлайн"], en: ["Instant updates", "Live brackets"] },
         cons: { ru: ["Интерфейс на английском"], en: ["English interface mainly"] },
         keywords: ["dota2", "cs2", "киберспорт", "турниры"],
-        isHot: true,
+        isHot: false,
         isNew: false
     },
     {
@@ -659,7 +659,7 @@ const sitesData = [
         pros: { ru: ["Точная проверка совместимости", "Сборки пользователей"], en: ["Accurate compatibility check", "User builds"] },
         cons: { ru: ["Цены ориентированы на западные магазины"], en: ["Prices based on western stores"] },
         keywords: ["пк", "железо", "сборка", "процессор"],
-        isHot: true,
+        isHot: false,
         isNew: false
     },
 
@@ -676,7 +676,7 @@ const sitesData = [
         cons: { ru: ["Цены иногда меняются на этапе оплаты"], en: ["Prices can change at checkout"] },
         keywords: ["билеты", "азия", "путешествие", "отели"],
         isHot: false,
-        isNew: true
+        isNew: false
     },
     {
         id: "rome2rio",
