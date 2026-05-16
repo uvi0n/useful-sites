@@ -182,6 +182,11 @@ function filterData() {
         container.innerHTML = `<h3>${currentLang === 'ru' ? 'Ничего не найдено 😢' : 'Nothing found 😢'}</h3>`;
         return;
     }
+
+    // Проверяем, что фильтры находятся в исходном состоянии
+    const showAd = currentCategory === ui[currentLang].all && currentPrice === 'all' && !showOnlyBookmarks && !showOnlyLikes;
+
+    filtered.forEach((site, index) => { // Твой существующий цикл
     
     filtered.forEach((site, index) => {
         // --- ВСТАВКА РЕКЛАМЫ (на 2-е место) ---
@@ -246,10 +251,12 @@ function filterData() {
     });
 
     // Если найден всего 1 сайт, ставим рекламу после него
-    if (filtered.length === 1) {
-        const adCard = document.createElement('a');
-        adCard.href = "mailto:inianovbob@gmail.com";
-        adCard.className = "card ad-card-grid";
+   // --- ВСТАВКА РЕКЛАМЫ (на 2-е место) ---
+        if (index === 1 && showAd) { // ДОБАВИЛИ ПРОВЕРКУ СЛОВА showAd
+            const adCard = document.createElement('a');
+            // Добавили тему письма в href, чтобы пользователю было удобнее писать
+            adCard.href = "mailto:inianovbob@gmail.com?subject=Реклама%20на%20free-webtools"; 
+            adCard.className = "card ad-card-grid";
         adCard.innerHTML = `
             <div class="ad-card-icon">🎯</div>
             <div class="ad-card-title">${currentLang === 'ru' ? 'Здесь могла бы быть ваша реклама' : 'Place your ad here'}</div>
