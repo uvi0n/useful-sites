@@ -8,12 +8,12 @@
     <meta name="description" content="Огромная коллекция бесплатных нейросетей, инструментов для дизайна, разработки и учебы.">
     <meta property="og:title" content="free-webtools | Лучшие бесплатные инструменты">
     <meta property="og:description" content="Сборник топовых сервисов для работы, учебы и дизайна.">
-    <meta property="og:image" content="https://uvi0n.github.io/free-webtools.ru/preview.jpg"> <meta property="og:url" content="https://uvi0n.github.io/free-webtools.ru/">
+    <meta property="og:image" content="https://uvi0n.github.io/free-webtools.ru/preview.jpg"> 
+    <meta property="og:url" content="https://uvi0n.github.io/free-webtools.ru/">
     
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
-    
-    </head>
+</head>
 <body>
 
     <header class="header">
@@ -21,10 +21,17 @@
             <div class="logo" onclick="window.location.hash=''; window.location.reload();" style="cursor:pointer;">🚀 free-webtools</div>
             
             <div id="statsCounter" class="stats-counter"></div>
-            
             <div id="likesLoader" class="stats-counter pulse-loader">⏳ Лайки...</div>
+            
             <div class="search-wrapper">
-                <input type="text" class="search-box" id="searchInput" placeholder="Поиск (название, теги)...">
+                <input type="text" class="search-box" id="searchInput" placeholder="Поиск (название, теги)..." autocomplete="off">
+                <div class="quick-tags">
+                    <span class="quick-tag" data-tag="ai">#Нейросети</span>
+                    <span class="quick-tag" data-tag="dota2">#Dota2</span>
+                    <span class="quick-tag" data-tag="cs2">#CS2</span>
+                    <span class="quick-tag" data-tag="математика">#Учеба</span>
+                    <span class="quick-tag" data-tag="nocode">#NoCode</span>
+                </div>
             </div>
             
             <div class="header-controls">
@@ -49,22 +56,22 @@
             <button class="sort-btn" data-sort="popular">⚡️ Популярные</button>
         </div>
 
-        <div id="stackManagerPanel" class="sort-container hidden" style="margin-top: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
-    <div class="sort-left">
-        <span class="sort-label" id="stackLabel">Текущий стек:</span>
-        <select id="stackSelect" class="sort-btn" style="padding: 8px 12px; cursor: pointer; outline: none; border-color: var(--border-color);"></select>
-        <button class="filter-btn" id="createStackBtn" style="background: var(--accent-color); color: #fff;">+ Создать стек</button>
-        <button class="filter-btn" id="deleteStackBtn" style="background: #ff3b30; color: #fff; padding: 8px 12px;">🗑️</button>
-    </div>
-    <div class="sort-right">
-        <button class="filter-btn active" id="shareStackBtn">🔗 Поделиться этим стеком</button>
-    </div>
-</div>
-        
         <div class="sort-right">
             <button class="icon-btn small-btn" id="viewToggle" title="Сменить вид (Сетка / Список)">📋</button>
             <button class="icon-btn small-btn" id="randomBtn" title="Случайный сайт">🎲</button>
             <button class="icon-btn small-btn" id="changelogBtn" title="Обновления">📜</button>
+        </div>
+    </div>
+
+    <div id="stackManagerPanel" class="sort-container hidden" style="margin-top: 0px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
+        <div class="sort-left">
+            <span class="sort-label" id="stackLabel">Текущий стек:</span>
+            <select id="stackSelect" class="sort-btn" style="padding: 8px 12px; cursor: pointer; outline: none; border-color: var(--border-color);"></select>
+            <button class="filter-btn" id="createStackBtn" style="background: var(--accent-color); color: #fff;">+ Создать стек</button>
+            <button class="filter-btn" id="deleteStackBtn" style="background: #ff3b30; color: #fff; padding: 8px 12px;">🗑️</button>
+        </div>
+        <div class="sort-right">
+            <button class="filter-btn active" id="shareStackBtn">🔗 Поделиться этим стеком</button>
         </div>
     </div>
 
@@ -92,17 +99,6 @@
         </div>
     </dialog>
 
-    <div class="search-wrapper">
-                <input type="text" id="searchInput" class="search-box" placeholder="Поиск (имя, теги)..." autocomplete="off">
-                <div class="quick-tags">
-                    <span class="quick-tag" data-tag="ai">#Нейросети</span>
-                    <span class="quick-tag" data-tag="dota2">#Dota2</span>
-                    <span class="quick-tag" data-tag="cs2">#CS2</span>
-                    <span class="quick-tag" data-tag="математика">#Учеба</span>
-                    <span class="quick-tag" data-tag="nocode">#NoCode</span>
-                </div>
-            </div>
-
     <dialog id="changelogModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" id="closeChangelog">×</span>
@@ -111,22 +107,22 @@
         </div>
     </dialog>
 
-    <script src="data.js"></script>
-    <script src="app.js"></script>
+    <dialog id="rouletteModal" class="modal" style="max-width: 700px;">
+        <div class="modal-content" style="overflow: hidden; padding: 40px 20px; text-align: center;">
+            <h3 id="rouletteTitle" style="margin-bottom: 20px;">🎲 Открытие кейса инструментов...</h3>
+            <div class="roulette-wrapper">
+                <div class="roulette-pointer"></div>
+                <div id="rouletteTrack" class="roulette-track"></div>
+            </div>
+        </div>
+    </dialog>
 
     <footer class="site-footer">
         <p>Сделано с ❤️ | <a href="https://yoomoney.ru/" target="_blank" class="donate-btn">☕ Поддержать автора</a></p>
     </footer>
 
-    <dialog id="rouletteModal" class="modal" style="max-width: 700px;">
-    <div class="modal-content" style="overflow: hidden; padding: 40px 20px; text-align: center;">
-        <h3 id="rouletteTitle" style="margin-bottom: 20px;">🎲 Открытие кейса инструментов...</h3>
-        <div class="roulette-wrapper">
-            <div class="roulette-pointer"></div>
-            <div id="rouletteTrack" class="roulette-track"></div>
-        </div>
-    </div>
-</dialog>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
     
 </body>
 </html>
