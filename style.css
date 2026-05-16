@@ -328,15 +328,13 @@ body {
 }
 
 .sort-container {
-    max-width: 1200px;
-    margin: 20px auto 10px;
-    padding: 10px 20px; /* Даем чуть больше "воздуха" сверху и снизу, чтобы кнопкам было куда расти при наведении */
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Именно это расталкивает блоки по краям */
     align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    overflow: visible; /* 🛠 ГЛАВНЫЙ ФИКС: запрещаем браузеру рисовать скролл-бары */
+    width: 100%;
+    max-width: 1200px; /* Ширина твоего основного контента */
+    margin: 0 auto;
+    padding: 10px 20px;
 }
 
 /* На мобильных устройствах центрируем всё */
