@@ -28,6 +28,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 // Глобальные объекты и флаги
 let globalLikesMap = {};
+let globalClicksMap = {};
 let isLikesLoaded = false;
 
 const ui = {
@@ -55,7 +56,7 @@ langToggle.textContent = currentLang === 'ru' ? '🇷🇺 RU' : '🇬🇧 EN';
 // --- Работа с Supabase ---
 async function loadLikes() {
     try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/likes?select=site_id,likes_count`, {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/likes?select=site_id,likes_count,clicks_count`, {
             headers: {
                 'apikey': SUPABASE_KEY,
                 'Authorization': `Bearer ${SUPABASE_KEY}`
@@ -64,12 +65,20 @@ async function loadLikes() {
         if (!response.ok) throw new Error('Network response was not ok');
         const data = await response.json();
         
+        // Правильно: один цикл внутри блока try
         data.forEach(item => {
             globalLikesMap[item.site_id] = item.likes_count;
+            globalClicksMap[item.site_id] = item.clicks_count || 0;
         });
     } catch (error) {
         console.error('Ошибка при загрузке лайков:', error);
     }
+}
+
+    data.forEach(item => {
+            globalLikesMap[item.site_id] = item.likes_count;
+            globalClicksMap[item.site_id] = item.clicks_count || 0; // <-- ДОБАВИТЬ ЭТУ СТРОКУ
+        });
 }
 
 function updateLikesOnLiveCards() {
@@ -180,8 +189,9 @@ function filterData() {
     // --- ЛОГИКА СОРТИРОВКИ ---
     if (currentSort === 'top') {
         filtered.sort((a, b) => (globalLikesMap[b.id] || 0) - (globalLikesMap[a.id] || 0));
-    } else if (currentSort === 'new') {
-        filtered.sort((a, b) => (b.isNew === a.isNew) ? 0 : b.isNew ? 1 : -1);
+   } else if (currentSort === 'popular') {
+        // Сортируем по количеству переходов (кликам)
+        filtered.sort((a, b) => (globalClicksMap[b.id] || 0) - (globalClicksMap[a.id] || 0));
     } else if (currentSort === 'default') {
         // Если выбран режим "По умолчанию" — перемешиваем сайты случайным образом
         shuffleArray(filtered);
@@ -246,7 +256,7 @@ function filterData() {
                 <img src="${logoUrl}" alt="" class="site-logo" loading="lazy" onerror="this.style.display='none'">
             </div>
             <h3>${site.name}</h3>
-            <a href="${site.url}" target="_blank" class="site-link" onclick="event.stopPropagation()">${site.url}</a>
+            <a href="${site.url}" target="_blank" class="site-link" onclick="event.stopPropagation(); trackClick('${site.id}')">${site.url}</a>
             <div class="tags">${tagsHtml}</div>
             <p class="desc">${site.desc[currentLang]}</p>
             
@@ -257,7 +267,7 @@ function filterData() {
                 <button class="action-btn bookmark-btn ${isBookmarked ? 'active' : ''}" onclick="toggleBookmark('${site.id}', this)">
                     ${isBookmarked ? '⭐' : '☆'}
                 </button>
-                <a href="${site.url}" target="_blank" class="btn" style="padding: 6px 12px; font-size: 12px;">${ui[currentLang].openBtn}</a>
+                <a href="${site.url}" target="_blank" class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="trackClick('${site.id}')">${ui[currentLang].openBtn}</a>
             </div>
         `;
 
@@ -317,7 +327,7 @@ window.toggleLike = function(siteId, btnElement) {
                 'Authorization': `Bearer ${SUPABASE_KEY}`,
                 'Prefer': 'resolution=merge-duplicates'
             },
-            body: JSON.stringify({ site_id: siteId, likes_count: newCount })
+            body: JSON.stringify({ site_id: siteId, likes_count: newCount, clicks_count: globalClicksMap[siteId] || 0 })
         }).catch(err => console.error("Ошибка сети при снятии лайка:", err));
         
         if (showOnlyLikes) filterData();
@@ -337,7 +347,7 @@ window.toggleLike = function(siteId, btnElement) {
                 'Authorization': `Bearer ${SUPABASE_KEY}`,
                 'Prefer': 'resolution=merge-duplicates'
             },
-            body: JSON.stringify({ site_id: siteId, likes_count: newCount })
+            body: JSON.stringify({ site_id: siteId, likes_count: newCount, clicks_count: globalClicksMap[siteId] || 0 })
         }).catch(err => console.error("Ошибка сети при отправке лайка:", err));
     }
     localStorage.setItem('myLikes', JSON.stringify(likedSites));
@@ -395,7 +405,7 @@ window.openDetail = function(siteId, updateHash = true) {
             <div class="cons"><h4>👎 ${ui[currentLang].cons}</h4><ul>${consList}</ul></div>
         </div>
         <div class="detail-actions">
-            <a href="${site.url}" target="_blank" class="btn">${ui[currentLang].visitBtn}</a>
+            <a href="${site.url}" target="_blank" class="btn" onclick="trackClick('${site.id}')">${ui[currentLang].visitBtn}</a>
         </div>
     `;
 
@@ -471,6 +481,31 @@ if (sortContainer) {
         };
     });
 }
+
+// --- УЧЕТ КЛИКОВ (ПРОСМОТРОВ) ---
+window.trackClick = function(siteId) {
+    let currentClicks = globalClicksMap[siteId] || 0;
+    let currentLikes = globalLikesMap[siteId] || 0;
+    
+    currentClicks += 1;
+    globalClicksMap[siteId] = currentClicks; // Обновляем локально мгновенно
+
+    // Отправляем в базу
+    fetch(`${SUPABASE_URL}/rest/v1/likes`, {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json', 
+            'apikey': SUPABASE_KEY, 
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Prefer': 'resolution=merge-duplicates'
+        },
+        body: JSON.stringify({ 
+            site_id: siteId, 
+            likes_count: currentLikes, 
+            clicks_count: currentClicks 
+        })
+    }).catch(err => console.error("Ошибка сети при учете клика:", err));
+};
 
 // --- ЗАПУСК ---
 if (likesLoader) likesLoader.style.display = 'inline-flex'; 
