@@ -2,8 +2,8 @@
 const appChangelog = [
     { 
         date: "15 Мая 2026", 
-        ru: "Добавлена система лайков, закладок и уникальные ID для интеграции с БД! 🎉", 
-        en: "Added likes, bookmarks, and unique IDs for DB integration! 🎉" 
+        ru: "увеличили базу сатов", 
+        en: "increased the sat database" 
     },
     { 
         date: "10 Мая 2026", 
@@ -26,9 +26,96 @@ const sitesData = [
         pros: { ru: ["Полностью бесплатно", "Работает с фото и видео"], en: ["Completely free", "Multimodal"] },
         cons: { ru: ["В РФ нужен VPN"], en: ["VPN needed in some regions"] },
         keywords: ["ai", "google", "gemini", "api"],
-        isHot: true,
+        isHot: false,
         isNew: false
     },
+
+    // --- НОВЫЕ ПОПОЛНЕНИЯ (МАЙ 2026) ---
+    {
+        id: "gamma-app",
+        name: "Gamma App",
+        url: "https://gamma.app/",
+        price: "freemium",
+        category: { ru: "Нейросети", en: "AI" },
+        desc: { ru: "Создание презентаций и веб-страниц с помощью ИИ.", en: "Create presentations and webpages with AI." },
+        fullDesc: { ru: "Генерирует готовые презентации, документы или веб-страницы по текстовому запросу за пару секунд. Форматирует текст и подбирает картинки самостоятельно.", en: "Generates beautiful presentations, docs, and webpages from a text prompt in seconds." },
+        pros: { ru: ["Шикарный современный дизайн", "Экспорт в PDF/PPTX"], en: ["Beautiful modern design", "Export to PDF/PPTX"] },
+        cons: { ru: ["Быстро заканчиваются бесплатные кредиты"], en: ["Free credits burn out quickly"] },
+        keywords: ["gamma", "презентации", "дизайн", "ai", "слайды"],
+        isHot: false,
+        isNew: false
+    },
+    {
+        id: "dotabuff",
+        name: "Dotabuff",
+        url: "https://www.dotabuff.com/",
+        price: "freemium",
+        category: { ru: "Игры", en: "Gaming" },
+        desc: { ru: "Главный сервис статистики для Dota 2.", en: "The premier Dota 2 statistics platform." },
+        fullDesc: { ru: "Отслеживает и анализирует каждый твой матч в Доте. Показывает винрейты героев, сборки предметов, подробные графики золота/опыта и тренды метагейма.", en: "Tracks and analyzes your Dota 2 matches. Provides hero win rates, item builds, and meta trends." },
+        pros: { ru: ["Колоссальный объем статистики", "Удобные гайды по героям"], en: ["Massive amounts of stats", "Great hero guides"] },
+        cons: { ru: ["Глубокая аналитика доступна только в Plus-подписке"], en: ["Advanced analysis requires Plus subscription"] },
+        keywords: ["dota", "dota2", "дота", "статистика", "киберспорт"],
+        isHot: false,
+        isNew: false
+    },
+    {
+        id: "dota2protracker",
+        name: "Dota2ProTracker",
+        url: "https://dota2protracker.com/",
+        price: "free",
+        category: { ru: "Игры", en: "Gaming" },
+        desc: { ru: "Сборки и тренды от профессиональных игроков в Dota 2.", en: "Track matches and builds of pro Dota 2 players." },
+        fullDesc: { ru: "Идеальный инструмент, чтобы смотреть, как прямо сейчас играют про-игроки (8к+ MMR). Показывает актуальные сборки предметов, раскачку скиллов и тайминги.", en: "See what pro players are building in high-MMR pubs. Tracks skill builds and item timings." },
+        pros: { ru: ["Обновляется каждые несколько минут", "Только актуальная мета"], en: ["Updates every few minutes", "Pure high-level meta"] },
+        cons: { ru: ["Интерфейс может показаться сложным для новичков"], en: ["Interface can be confusing for beginners"] },
+        keywords: ["dota", "dota2", "дота", "протрекер", "киберспорт", "мета"],
+        isHot: false,
+        isNew: false
+    },
+    {
+        id: "x-grok",
+        name: "Grok AI",
+        url: "https://x.com/i/grok",
+        price: "paid",
+        category: { ru: "Нейросети", en: "AI" },
+        desc: { ru: "Нейросеть от Илона Маска с доступом к инсайдам X.", en: "AI assistant by Elon Musk with real-time X data." },
+        fullDesc: { ru: "Умный ассистент, интегрированный в соцсеть X (Twitter). Имеет доступ к самым свежим новостям и трендам интернета в режиме реального времени. Олицетворяет дерзкий стиль общения.", en: "AI assistant integrated into X. Has real-time access to global news, trends, and posts with a witty tone." },
+        pros: { ru: ["Знает о событиях, случившихся минуту назад", "Генерация картинок без цензуры"], en: ["Knows events from minutes ago", "Uncensored image gen"] },
+        cons: { ru: ["Доступен только внутри подписки X Premium"], en: ["Requires X Premium subscription"] },
+        keywords: ["grok", "грок", "маск", "ai", "нейросеть", "twitter"],
+        isHot: false,
+        isNew: false
+    },
+    {
+        id: "webflow",
+        name: "Webflow",
+        url: "https://webflow.com/",
+        price: "freemium",
+        category: { ru: "Разработка", en: "Dev" },
+        desc: { ru: "Профессиональный визуальный конструктор сайтов.", en: "Professional visual website builder and CMS." },
+        fullDesc: { ru: "Мощная low-code платформа для дизайнеров и разработчиков. Позволяет верстать сайты визуально, генерируя на выходе чистейший и адаптивный HTML/CSS/JS код.", en: "Powerful low-code tool that gives you total control over HTML, CSS, and JS visually." },
+        pros: { ru: ["Полная свобода дизайна", "Идеальный чистый код на выходе"], en: ["Total layout freedom", "Outputs production-ready code"] },
+        cons: { ru: ["Очень сложный интерфейс, требует обучения"], en: ["Steep learning curve"] },
+        keywords: ["webflow", "flow", "верстка", "nocode", "lowcode", "конструктор"],
+        isHot: false,
+        isNew: false
+    },
+    {
+        id: "v0-dev",
+        name: "v0 by Vercel",
+        url: "https://v0.dev/",
+        price: "freemium",
+        category: { ru: "Разработка", en: "Dev" },
+        desc: { ru: "Генератор интерфейсов на основе текста.", en: "Generates UI components using text prompts." },
+        fullDesc: { ru: "Нейросеть от создателей Vercel, которая по твоему текстовому описанию создаёт готовый адаптивный фронтенд-код интерфейса (React, Tailwind CSS, Shadcn UI).", en: "AI tool by Vercel that generates production-ready UI components using React and Tailwind." },
+        pros: { ru: ["Невероятная скорость прототипирования", "Код можно сразу копировать в проект"], en: ["Insane prototyping speed", "Copy-paste ready code"] },
+        cons: { ru: ["Иногда путает сложные JS-логики"], en: ["Can struggle with complex JS logic"] },
+        keywords: ["v0", "vercel", "фронтенд", "react", "tailwind", "ai"],
+        isHot: false,
+        isNew: false
+    },
+
     {
         id: "chatgpt",
         name: "ChatGPT",
@@ -40,7 +127,7 @@ const sitesData = [
         pros: { ru: ["Лучшее понимание контекста", "Огромная база знаний"], en: ["Best context understanding", "Huge knowledge base"] },
         cons: { ru: ["Лучшая модель (GPT-4) платная"], en: ["Best model is paid"] },
         keywords: ["chatgpt", "openai", "текст", "код", "ai"],
-        isHot: true,
+        isHot: false,
         isNew: false
     },
     {
