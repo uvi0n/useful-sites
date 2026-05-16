@@ -622,14 +622,6 @@ window.togglePin = function(siteId, btnElement) {
     filterData();
 };
 
-// --- БЫСТРЫЕ ТЕГИ ---
-document.querySelectorAll('.quick-tag').forEach(tag => {
-    tag.onclick = () => {
-        searchInput.value = tag.getAttribute('data-tag');
-        filterData();
-    };
-});
-
 // --- УПРАВЛЕНИЕ КАСТОМНЫМИ СТЕКАМИ ---
 function updateStackSelect() {
     if(!stackSelect) return;
