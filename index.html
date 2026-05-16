@@ -29,6 +29,7 @@
             
             <div class="header-controls">
                 <button class="icon-btn" id="suggestBtn" title="Предложить сайт">💡</button>
+                <button class="icon-btn" id="stackBtn" title="Мои кастомные стеки">📦</button>
                 <button class="icon-btn" id="likesBtn" title="Мои лайки">❤️</button>
                 <button class="icon-btn" id="bookmarksBtn" title="Мои закладки">⭐</button>
                 <button class="icon-btn" id="langToggle">RU</button>
@@ -47,9 +48,20 @@
              <button class="sort-btn" data-sort="top">🔥 Топ (по лайкам)</button>
             <button class="sort-btn" data-sort="popular">⚡️ Популярные</button>
         </div>
+
+        <div id="stackManagerPanel" class="sort-container hidden" style="margin-top: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
+    <div class="sort-left">
+        <span class="sort-label" id="stackLabel">Текущий стек:</span>
+        <select id="stackSelect" class="sort-btn" style="padding: 8px 12px; cursor: pointer; outline: none; border-color: var(--border-color);"></select>
+        <button class="filter-btn" id="createStackBtn" style="background: var(--accent-color); color: #fff;">+ Создать стек</button>
+        <button class="filter-btn" id="deleteStackBtn" style="background: #ff3b30; color: #fff; padding: 8px 12px;">🗑️</button>
+    </div>
+    <div class="sort-right">
+        <button class="filter-btn active" id="shareStackBtn">🔗 Поделиться этим стеком</button>
+    </div>
+</div>
         
         <div class="sort-right">
-            <button class="icon-btn small-btn" id="shareBtn" title="Поделиться моим стеком (закладками)">🔗</button>
             <button class="icon-btn small-btn" id="viewToggle" title="Сменить вид (Сетка / Список)">📋</button>
             <button class="icon-btn small-btn" id="randomBtn" title="Случайный сайт">🎲</button>
             <button class="icon-btn small-btn" id="changelogBtn" title="Обновления">📜</button>
@@ -105,6 +117,16 @@
     <footer class="site-footer">
         <p>Сделано с ❤️ | <a href="https://yoomoney.ru/" target="_blank" class="donate-btn">☕ Поддержать автора</a></p>
     </footer>
+
+    <dialog id="rouletteModal" class="modal" style="max-width: 700px;">
+    <div class="modal-content" style="overflow: hidden; padding: 40px 20px; text-align: center;">
+        <h3 id="rouletteTitle" style="margin-bottom: 20px;">🎲 Открытие кейса инструментов...</h3>
+        <div class="roulette-wrapper">
+            <div class="roulette-pointer"></div>
+            <div id="rouletteTrack" class="roulette-track"></div>
+        </div>
+    </div>
+</dialog>
     
 </body>
 </html>
