@@ -293,6 +293,12 @@ function filterData() {
         const actualClicks = isLikesLoaded ? (globalClicksMap[site.id] !== undefined ? globalClicksMap[site.id] : 0) : '...';
 
         card.innerHTML = `
+            ${(showOnlyBookmarks || showOnlyLikes) ? `
+            <button class="pin-btn" onclick="event.stopPropagation(); togglePin('${site.id}', this)" title="Закрепить наверху">
+                ${isPinned ? '📌' : '📍'}
+            </button>
+            ` : ''}
+
             <div class="card-header">
                 ${badgeHtml}
                 <div>
@@ -314,12 +320,6 @@ function filterData() {
                 <button class="action-btn bookmark-btn ${isBookmarked ? 'active' : ''}" onclick="toggleBookmark('${site.id}', this)">
                     ${isBookmarked ? '⭐' : '☆'}
                 </button>
-
-                ${(showOnlyBookmarks || showOnlyLikes) ? `
-                <button class="action-btn" onclick="togglePin('${site.id}', this)" title="Закрепить наверху">
-                    ${isPinned ? '📌' : '📍'}
-                </button>
-                ` : ''}
 
                 <div class="action-btn view-btn" style="cursor: default;" title="Переходы на сайт">
                     🔗 <span class="clicks-count" data-site="${site.id}">${actualClicks}</span>
