@@ -33,8 +33,14 @@ let globalClicksMap = {};
 let isLikesLoaded = false;
 
 const ui = {
-    ru: { searchPlaceholder: "Поиск (имя, теги)...", all: "Все", found: "Найдено: ", anyPrice: "Любая цена", free: "Бесплатно", freemium: "Частично", paid: "Платно", ad: "Нашли ошибку? По вопросам рекламы: ", openBtn: "Открыть", visitBtn: "Перейти на сайт", pros: "Плюсы", cons: "Минусы", back: "⬅ Назад" },
-    en: { searchPlaceholder: "Search (name, tags)...", all: "All", found: "Found: ", anyPrice: "Any Price", free: "Free", freemium: "Freemium", paid: "Paid", ad: "Found an error? For advertising: ", openBtn: "Open", visitBtn: "Visit Site", pros: "Pros", cons: "Cons", back: "⬅ Back" }
+    ru: { 
+        searchPlaceholder: "Поиск (имя, теги)...", all: "Все", found: "Найдено: ", anyPrice: "Любая цена", free: "Частично бесплатно", freemium: "Частично", paid: "Платно", ad: "Нашли ошибку? По вопросам рекламы: ", openBtn: "Открыть", visitBtn: "Перейти на сайт", pros: "Плюсы", cons: "Минусы", back: "⬅ Назад",
+        sortLabel: "Сортировка:", sortDefault: "По умолчанию", sortTop: "🔥 Топ (по лайкам)", sortPopular: "⚡️ Популярные", similarTools: "Похожие инструменты" 
+    },
+    en: { 
+        searchPlaceholder: "Search (name, tags)...", all: "All", found: "Found: ", anyPrice: "Any Price", free: "Free", freemium: "Partially free", paid: "Paid", ad: "Found an error? For advertising: ", openBtn: "Open", visitBtn: "Visit Site", pros: "Pros", cons: "Cons", back: "⬅ Back",
+        sortLabel: "Sort by:", sortDefault: "Default", sortTop: "🔥 Top (by likes)", sortPopular: "⚡️ Popular", similarTools: "Similar tools" 
+    }
 };
 
 let currentLang = localStorage.getItem('lang') || 'ru';
@@ -116,6 +122,27 @@ function updateUI() {
     searchInput.placeholder = ui[currentLang].searchPlaceholder;
     backBtn.textContent = ui[currentLang].back;
     
+    // --- ПЕРЕВОД НОВЫХ ЭЛЕМЕНТОВ ---
+    // Перевод надписи "Сортировка:"
+    const sortLabelText = document.querySelector('.sort-label');
+    if (sortLabelText) sortLabelText.textContent = ui[currentLang].sortLabel;
+
+    // Перевод кнопок сортировки
+    const btnDefault = document.querySelector('.sort-btn[data-sort="default"]');
+    if (btnDefault) btnDefault.textContent = ui[currentLang].sortDefault;
+
+    const btnTop = document.querySelector('.sort-btn[data-sort="top"]');
+    if (btnTop) btnTop.textContent = ui[currentLang].sortTop;
+
+    // Учитываем, если у тебя data-sort="popular" или остался "new"
+    const btnPopular = document.querySelector('.sort-btn[data-sort="popular"]') || document.querySelector('.sort-btn[data-sort="new"]');
+    if (btnPopular) btnPopular.textContent = ui[currentLang].sortPopular;
+
+    // Перевод заголовка "Похожие инструменты" в карточке
+    const similarTitle = document.getElementById('similar-title');
+    if (similarTitle) similarTitle.textContent = ui[currentLang].similarTools;
+    // ---------------------------------
+    
     if (!window.location.hash.startsWith('#category=')) {
         currentCategory = ui[currentLang].all; 
     }
@@ -124,7 +151,6 @@ function updateUI() {
     renderPriceFilters();
     filterData();
 }
-
 // Функция для случайного перемешивания массива (Алгоритм Фишера-Йетса)
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
