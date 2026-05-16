@@ -382,3 +382,71 @@ body {
     color: var(--accent-color);
     text-decoration: underline;
 }
+
+/* --- ВИД СПИСКОМ (LIST VIEW) --- */
+.container.list-view {
+    grid-template-columns: 1fr; /* Делаем одну сплошную колонку */
+}
+
+/* Перестраиваем внутренности карточки */
+.container.list-view .card {
+    display: grid;
+    grid-template-columns: 100px 1fr 160px; /* Логотип | Текст | Кнопки */
+    grid-template-areas: 
+        "header title actions"
+        "header link actions"
+        "header tags actions"
+        "header desc actions";
+    align-items: start;
+    column-gap: 25px;
+    row-gap: 5px;
+    padding: 20px 25px;
+}
+
+/* Размещаем элементы по зонам */
+.container.list-view .card-header { 
+    grid-area: header; 
+    flex-direction: column; 
+    align-items: center; 
+    margin-bottom: 0; 
+    gap: 10px; 
+}
+.container.list-view .card-header > div {
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+}
+.container.list-view .badge { position: static; }
+.container.list-view .price-badge { margin-left: 0; }
+
+.container.list-view h3 { grid-area: title; margin-top: 0; }
+.container.list-view .site-link { grid-area: link; margin-bottom: 5px; }
+.container.list-view .tags { grid-area: tags; margin-bottom: 5px; }
+.container.list-view .desc { grid-area: desc; margin-bottom: 0; }
+
+.container.list-view .card-actions { 
+    grid-area: actions; 
+    flex-direction: column; 
+    border-top: none; 
+    padding-top: 0; 
+    margin-top: 0; 
+    border-left: 1px solid var(--border-color); 
+    padding-left: 20px; 
+    height: 100%;
+    justify-content: center;
+    gap: 15px;
+}
+
+/* На мобильных телефонах всегда возвращаем вид сетки (иначе список не влезет в экран) */
+@media (max-width: 768px) {
+    .container.list-view .card {
+        display: flex; flex-direction: column;
+    }
+    .container.list-view .card-header {
+        flex-direction: row; margin-bottom: 15px;
+    }
+    .container.list-view .card-header > div { flex-direction: row; }
+    .container.list-view .badge { position: absolute; top: -10px; left: -10px; }
+    .container.list-view .price-badge { margin-left: 10px; }
+    .container.list-view .card-actions {
+        flex-direction: row; border-left: none; padding-left: 0; border-top: 1px solid var(--border-color); padding-top: 15px; margin-top: 15px;
+    }
+}
