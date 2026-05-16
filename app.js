@@ -35,11 +35,11 @@ let isLikesLoaded = false;
 const ui = {
     ru: { 
         searchPlaceholder: "Поиск (имя, теги)...", all: "Все", found: "Найдено: ", anyPrice: "Любая цена", free: "Бесплатно", freemium: "Частично бесплатно", paid: "Платно", ad: "Нашли ошибку? По вопросам рекламы: ", openBtn: "Открыть", visitBtn: "Перейти на сайт", pros: "Плюсы", cons: "Минусы", back: "⬅ Назад",
-        sortLabel: "Сортировка:", sortDefault: "По умолчанию", sortTop: "🔥 Топ (по лайкам)", sortPopular: "⚡️ Популярные", similarTools: "Похожие инструменты" 
+        sortLabel: "Сортировка:", sortDefault: "По умолчанию", sortTop: "🔥 Топ (по лайкам)", sortPopular: "⚡️ Популярные", similarTools: "Похожие инструменты", pinTitle: "Закрепить / Открепить"
     },
     en: { 
         searchPlaceholder: "Search (name, tags)...", all: "All", found: "Found: ", anyPrice: "Any Price", free: "Free", freemium: "Partially free", paid: "Paid", ad: "Found an error? For advertising: ", openBtn: "Open", visitBtn: "Visit Site", pros: "Pros", cons: "Cons", back: "⬅ Back",
-        sortLabel: "Sort by:", sortDefault: "Default", sortTop: "🔥 Top (by likes)", sortPopular: "⚡️ Popular", similarTools: "Similar tools" 
+        sortLabel: "Sort by:", sortDefault: "Default", sortTop: "🔥 Top (by likes)", sortPopular: "⚡️ Popular", similarTools: "Similar tools", pinTitle: "Pin / Unpin"
     }
 };
 
@@ -294,7 +294,7 @@ function filterData() {
 
         card.innerHTML = `
             ${(showOnlyBookmarks || showOnlyLikes) ? `
-            <button class="pin-btn" onclick="event.stopPropagation(); togglePin('${site.id}', this)" title="Закрепить наверху">
+            <button class="pin-btn" onclick="event.stopPropagation(); togglePin('${site.id}', this)" title="${ui[currentLang].pinTitle}">
                 ${isPinned ? '📌' : '📍'}
             </button>
             ` : ''}
