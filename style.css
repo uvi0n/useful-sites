@@ -351,3 +351,34 @@ body {
 }
 .sort-btn:hover { border-color: var(--accent-color); }
 .sort-btn.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
+
+/* Рекламная карточка в сетке */
+.ad-card-grid {
+    text-decoration: none;
+    border: 2px dashed var(--accent-color);
+    background: rgba(108, 92, 231, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.ad-card-grid:hover {
+    background: rgba(108, 92, 231, 0.1);
+    transform: translateY(-8px);
+}
+.ad-card-icon {
+    font-size: 40px;
+    margin-bottom: 15px;
+}
+.ad-card-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+.ad-card-link {
+    font-size: 14px;
+    color: var(--accent-color);
+    text-decoration: underline;
+}
