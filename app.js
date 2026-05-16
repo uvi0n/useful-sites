@@ -14,6 +14,7 @@ const statsCounter = document.getElementById('statsCounter');
 const likesLoader = document.getElementById('likesLoader');
 const randomBtn = document.getElementById('randomBtn');
 const bookmarksBtn = document.getElementById('bookmarksBtn');
+const viewToggle = document.getElementById('viewToggle');
 const likesBtn = document.getElementById('likesBtn');
 const similarToolsContainer = document.getElementById('similar-tools');
 const sortContainer = document.getElementById('sortContainer'); // Перенесли наверх для правильной работы
@@ -44,7 +45,8 @@ let currentPrice = 'all';
 // Флаги фильтров и сортировки
 let showOnlyBookmarks = false;
 let showOnlyLikes = false; 
-let currentSort = 'default'; 
+let currentSort = 'default';
+let currentView = localStorage.getItem('view') || 'grid';
 
 // Инициализация LocalStorage для Закладок и Лайков
 let bookmarks = JSON.parse(localStorage.getItem('myBookmarks')) || [];
@@ -475,6 +477,28 @@ if (sortContainer) {
             filterData();
         };
     });
+}
+
+// --- ПЕРЕКЛЮЧАТЕЛЬ ВИДА (СЕТКА / СПИСОК) ---
+// Применяем сохраненный вид при первой загрузке
+if (currentView === 'list') {
+    container.classList.add('list-view');
+    if (viewToggle) viewToggle.textContent = '🔲'; // Меняем иконку на "Сетку"
+}
+
+if (viewToggle) {
+    viewToggle.onclick = () => {
+        if (currentView === 'grid') {
+            currentView = 'list';
+            container.classList.add('list-view');
+            viewToggle.textContent = '🔲'; // Подсказка, что клик вернет сетку
+        } else {
+            currentView = 'grid';
+            container.classList.remove('list-view');
+            viewToggle.textContent = '📋'; // Подсказка, что клик включит список
+        }
+        localStorage.setItem('view', currentView); // Запоминаем выбор пользователя
+    };
 }
 
 // --- УЧЕТ КЛИКОВ (ПРОСМОТРОВ) ---
