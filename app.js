@@ -75,12 +75,7 @@ async function loadLikes() {
     }
 }
 
-    data.forEach(item => {
-            globalLikesMap[item.site_id] = item.likes_count;
-            globalClicksMap[item.site_id] = item.clicks_count || 0; // <-- ДОБАВИТЬ ЭТУ СТРОКУ
-        });
-}
-
+// СРАЗУ ПОСЛЕ LOADLIKES ИДЕТ СЛЕДУЮЩАЯ ФУНКЦИЯ:
 function updateLikesOnLiveCards() {
     const likeButtons = container.querySelectorAll('.like-btn');
     likeButtons.forEach(btn => {
