@@ -298,12 +298,14 @@ function filterData() {
                     ${isLiked ? '❤️' : '🤍'} <span>${actualLikes}</span>
                 </button>
                 
-                <div class="action-btn view-btn" style="cursor: default;" title="Просмотры">
-                    👁️ <span class="clicks-count" data-site="${site.id}">${actualClicks}</span>
-                </div>
                 <button class="action-btn bookmark-btn ${isBookmarked ? 'active' : ''}" onclick="toggleBookmark('${site.id}', this)">
                     ${isBookmarked ? '⭐' : '☆'}
                 </button>
+
+                <div class="action-btn view-btn" style="cursor: default;" title="Переходы на сайт">
+                    🔗 <span class="clicks-count" data-site="${site.id}">${actualClicks}</span>
+                </div>
+                
                 <a href="${site.url}" target="_blank" class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="trackClick('${site.id}')">${ui[currentLang].openBtn}</a>
             </div>
         `;
